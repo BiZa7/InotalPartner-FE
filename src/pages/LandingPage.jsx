@@ -1,228 +1,787 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PublicNavbar from '../components/PublicNavbar'
 import {
   MonitorCog,
   Layers,
   Settings2,
   Code2,
-  ServerCog,
-  GraduationCap,
-  ArrowRight,
-  Camera,     
-  Briefcase,  
-  Hash,       
-  Globe,      
-  Play,       
+  ChevronLeft,
   ChevronRight,
+  Phone,
+  MapPin,
+  Mail,
+  MousePointer,
+  Quote,
+  Camera,
 } from 'lucide-react'
 
-const services = [
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+// Setiap slide hero punya: gambar background, kata highlight (di-block biru), dan sub-headline.
+// Ketiganya berganti bersamaan.
+const heroSlides = [
+  {
+    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1600&q=80',
+    highlight: 'Keberlanjutan',
+    subline: 'Apapun itu, semangat keberlanjutan amat penting tuk masa depan.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80',
+    highlight: 'Inovasi',
+    subline: 'Inovasi digital untuk transformasi bisnis dan ekosistem bangsa.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80',
+    highlight: 'Kolaborasi',
+    subline: 'Bersama kita wujudkan Indonesia emas 2045 melalui kolaborasi nyata.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1600&q=80',
+    highlight: 'Kemitraan',
+    subline: 'Platform tunggal untuk potensi, program, dan kemitraan strategis.',
+  },
+]
+
+const partnershipBoxes = [
   {
     icon: MonitorCog,
     title: 'IT CONSULTANT',
-    description:
-      'Your IT consultancy service involves providing expert advice and guidance to businesses looking to leverage technology for their growth and efficiency.',
+    desc: 'Layanan konsultasi IT profesional untuk bisnis yang ingin memanfaatkan teknologi secara strategis demi pertumbuhan dan efisiensi operasional.',
   },
   {
     icon: Layers,
     title: 'SYSTEM INTEGRATION',
-    description:
-      'System integration is the process of ensuring that different software and hardware components within a business\'s IT ecosystem work seamlessly together.',
+    desc: 'Memastikan komponen perangkat lunak dan keras dalam ekosistem IT bisnis Anda bekerja secara harmonis dan terpadu.',
   },
   {
     icon: Settings2,
-    title: 'RESOURCES MANAGE SERVICE',
-    description:
-      'We offer strategic consulting and implementation services to effectively allocate and utilize resources, ensuring maximum efficiency and cost-effectiveness.',
+    title: 'RESOURCE MANAGEMENT',
+    desc: 'Layanan konsultasi dan implementasi strategis untuk mengalokasikan sumber daya secara efektif demi efisiensi biaya maksimal.',
   },
   {
     icon: Code2,
     title: 'SOFTWARE DEVELOPMENT',
-    description:
-      'Software development is the creation of custom software solutions tailored to a client\'s specific needs.',
-  },
-  {
-    icon: ServerCog,
-    title: 'OPERATION SYSTEM & MAINTENANCE',
-    description:
-      'Our experts provide customized solutions to design, implement, and maintain robust operational frameworks that align with your business goals and regulatory requirements.',
-  },
-  {
-    icon: GraduationCap,
-    title: 'TRAINING DEVELOPMENT',
-    description:
-      'From curriculum design to delivery, our solutions are designed to drive performance and foster professional growth.',
+    desc: 'Pengembangan solusi perangkat lunak kustom yang disesuaikan dengan kebutuhan spesifik dan visi bisnis klien.',
   },
 ]
 
-const partners = [
-  'PT Maju Bersama',
-  'Teknologi Nusantara',
-  'DataCore Asia',
-  'Solusi Digital',
-  'InfraNet Group',
-  'CloudBridge ID',
+const events = [
+  {
+    img: null,
+    title: 'Workshop Transformasi Digital',
+    date: '10 Agustus 2025',
+    desc: 'Pelajari strategi transformasi digital terkini bersama para praktisi dan pakar industri terpilih.',
+  },
+  {
+    img: null,
+    title: 'Summit INOTAL 2025',
+    date: '22 September 2025',
+    desc: 'Pertemuan tahunan para mitra strategis untuk membahas inovasi dan peluang kolaborasi ke depan.',
+  },
+  {
+    img: null,
+    title: 'Bootcamp Kepemimpinan Pemuda',
+    date: '5 Oktober 2025',
+    desc: 'Program intensif pengembangan jiwa kepemimpinan bagi generasi muda potensial Indonesia.',
+  },
+  {
+    img: null,
+    title: 'Forum Keberlanjutan Bisnis',
+    date: '18 Oktober 2025',
+    desc: 'Diskusi mendalam mengenai praktik bisnis berkelanjutan dan dampak jangka panjang bagi ekosistem.',
+  },
+  {
+    img: null,
+    title: 'Pelatihan AI untuk UMKM',
+    date: '2 November 2025',
+    desc: 'Memberdayakan pelaku usaha kecil dan menengah dengan kecerdasan buatan yang praktis dan terjangkau.',
+  },
+  {
+    img: null,
+    title: 'Gala Dinner Mitra 2025',
+    date: '15 Desember 2025',
+    desc: 'Malam apresiasi bagi seluruh mitra dan alumni yang telah berkontribusi nyata bagi ekosistem INOTAL.',
+  },
 ]
 
-const footerLinks = {
-  Company: ['About Us', 'Our Team', 'Careers', 'News'],
-  Services: ['IT Consultant', 'System Integration', 'Software Development', 'Training'],
-  Support: ['Help Center', 'Documentation', 'System Status', 'Contact Us'],
+const testimonials = [
+  {
+    quote: 'INOTAL membuka wawasan saya tentang bagaimana teknologi dan kolaborasi bisa berjalan beriringan untuk membangun Indonesia yang lebih maju.',
+    name: 'Andi Prasetyo',
+    role: 'CEO, TechNusa Ventures',
+    initials: 'AP',
+  },
+  {
+    quote: 'Program kemitraan INOTAL memberikan saya akses ke jaringan yang tidak ternilai. Dalam 6 bulan, bisnis kami berkembang pesat berkat ekosistem ini.',
+    name: 'Sari Dewi',
+    role: 'Founder, GreenLoop ID',
+    initials: 'SD',
+  },
+  {
+    quote: 'Sebagai pemuda yang baru terjun ke dunia bisnis, INOTAL hadir sebagai mentor sekaligus jembatan menuju peluang yang lebih besar.',
+    name: 'Bima Sakti',
+    role: 'Direktur, Inovasi Muda',
+    initials: 'BS',
+  },
+  {
+    quote: 'Kualitas program pelatihan INOTAL jauh melampaui ekspektasi kami. Tim profesional dan kurikulumnya relevan dengan kebutuhan industri saat ini.',
+    name: 'Rina Melati',
+    role: 'VP Strategy, DataCore Asia',
+    initials: 'RM',
+  },
+]
+
+const partnerLogos = [
+  'Kementerian Kominfo',
+  'Kementerian BUMN',
+  'RSUP Fatmawati',
+  'RS Siloam Group',
+  'Telkom Indonesia',
+  'Bank BRI',
+  'Pertamina',
+  'PLN',
+  'Bulog',
+  'Kemenkes RI',
+]
+
+const actionBoxes = [
+  {
+    title: 'Dunia Cepat Berubah',
+    desc: 'Perubahan teknologi dan pasar terjadi begitu cepat — mereka yang adaptif akan memimpin gelombang berikutnya.',
+    color: 'bg-sky-50 border-sky-200',
+    textColor: 'text-sky-700',
+  },
+  {
+    title: 'Blue Ocean',
+    desc: 'Masih banyak ruang tak terjamah di ekosistem digital Indonesia. Jadilah yang pertama mengisinya bersama INOTAL.',
+    color: 'bg-emerald-50 border-emerald-200',
+    textColor: 'text-emerald-700',
+  },
+  {
+    title: 'Ekonomi Inovasi Bikin Aksi',
+    desc: 'Inovasi bukan sekadar ide — ia adalah aksi nyata yang menggerakkan roda ekonomi dan menciptakan dampak sosial.',
+    color: 'bg-violet-50 border-violet-200',
+    textColor: 'text-violet-700',
+  },
+  {
+    title: 'Momentum Pergerakan',
+    desc: 'Saat ini adalah waktu terbaik untuk bergerak. Bergabunglah dengan komunitas pemuda yang tidak menunggu.',
+    color: 'bg-amber-50 border-amber-200',
+    textColor: 'text-amber-700',
+  },
+  {
+    title: 'Potensi Bangsa',
+    desc: 'Indonesia memiliki 270 juta jiwa dengan semangat luar biasa. INOTAL hadir untuk mengoptimalkan setiap potensi itu.',
+    color: 'bg-rose-50 border-rose-200',
+    textColor: 'text-rose-700',
+  },
+  {
+    title: 'Investasi Masa Depan',
+    desc: 'Bergabung hari ini adalah investasi terbaik untuk karier, jaringan, dan dampak yang akan kamu rasakan bertahun-tahun ke depan.',
+    color: 'bg-teal-50 border-teal-200',
+    textColor: 'text-teal-700',
+  },
+]
+
+const newsItems = [
+  {
+    date: '25 Juni 2025',
+    title: 'INOTAL Resmi Jalin Kemitraan dengan 3 Kementerian Republik Indonesia',
+    excerpt:
+      'Langkah bersejarah bagi ekosistem INOTAL: penandatanganan MoU dengan tiga kementerian strategis membuka peluang program nasional yang lebih luas dan berdampak bagi generasi muda.',
+  },
+  {
+    date: '10 Juni 2025',
+    title: '95 Alumni INOTAL Berhasil Masuk Ekosistem Startup dan Korporasi Nasional',
+    excerpt:
+      'Pencapaian luar biasa dari program akselerasi INOTAL: hampir serratus alumni kini berkarya di berbagai perusahaan dan startup terkemuka, membuktikan efektivitas platform kemitraan ini.',
+  },
+]
+
+const stats = [
+  { value: '2021', label: 'TAHUN BERDIRI' },
+  { value: '95+', label: 'ALUMNI' },
+  { value: '7', label: 'PARTNERSHIP' },
+  { value: '19', label: 'PROGRAM' },
+]
+
+const footerProfil = ['Tentang', 'Visi Misi', 'Kemitraan', 'Event']
+const footerPartnership = ['Bergabung Sekarang', 'InotalHub Tech', 'Group & Div', 'Kontak']
+
+// ─── SCROLL INDICATOR ────────────────────────────────────────────────────────
+function ScrollIndicator() {
+  return (
+    <div className="flex flex-col items-center gap-1 animate-bounce">
+      <div className="w-6 h-10 rounded-full border-2 border-white/60 flex items-start justify-center pt-1.5">
+        <div className="w-1 h-2 bg-white/80 rounded-full animate-[scrollDot_1.5s_ease-in-out_infinite]" />
+      </div>
+      <span className="text-white/50 text-xs tracking-widest uppercase">Scroll</span>
+    </div>
+  )
 }
 
-export default function LandingPage({ onNavigate }) {
+// ─── FLOATING STAT CARD ──────────────────────────────────────────────────────
+// Kartu statistik yang melayang lembut, ditempatkan di pojok-pojok hero.
+function FloatingStat({ value, label, className = '', rotate = '0deg', delay = '0s' }) {
   return (
-    <div className="min-h-screen bg-white text-gray-800 font-sans">
+    <div
+      className={`hidden sm:flex absolute z-10 flex-col items-center bg-white rounded-2xl shadow-xl px-5 py-3 min-w-[112px] ${className}`}
+      style={{
+        animation: `floatY 4.5s ease-in-out ${delay} infinite`,
+        '--rot': rotate,
+      }}
+    >
+      <span className="text-sky-500 text-3xl md:text-3xl font-extrabold leading-none">{value}</span>
+      <span className="text-gray-500 text-xs md:text-xs font-semibold tracking-wide mt-1.5 text-center">
+        {label}
+      </span>
+    </div>
+  )
+}
 
-      {/* NAVBAR */}
-      <PublicNavbar onNavigate={onNavigate} />
+// ─── CAROUSEL HOOK ───────────────────────────────────────────────────────────
+function useCarousel(total, perView = 1) {
+  const [idx, setIdx] = useState(0)
+  const maxIdx = Math.max(0, total - perView)
+  const prev = () => setIdx((i) => Math.max(0, i - 1))
+  const next = () => setIdx((i) => Math.min(maxIdx, i + 1))
+  return { idx, prev, next, canPrev: idx > 0, canNext: idx < maxIdx }
+}
 
-      {/* HERO */}
-      <section className="pt-28 pb-20 px-6 bg-white">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-full px-4 py-1.5 text-xs text-sky-600 font-semibold mb-8 tracking-widest uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-            Strategic IT Partnership Platform
-          </div>
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
+export default function LandingPage({ onNavigate }) {
+  // Navbar transparency on scroll
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-          {/* Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-gray-900 mb-6">
-            Build Partnerships
+  // Hero slide index — mengontrol gambar background, subline, DAN kata highlight sekaligus
+  const [heroIdx, setHeroIdx] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setHeroIdx((i) => (i + 1) % heroSlides.length), 5000)
+    return () => clearInterval(t)
+  }, [])
+  const heroPrev = () => setHeroIdx((i) => (i - 1 + heroSlides.length) % heroSlides.length)
+  const heroNext = () => setHeroIdx((i) => (i + 1) % heroSlides.length)
+
+  // Event carousel
+  const eventC = useCarousel(events.length, 3)
+  // Testimoni carousel (2 per view)
+  const testiC = useCarousel(testimonials.length, 2)
+
+  return (
+    <div className="min-h-screen bg-white text-gray-800 font-sans overflow-x-hidden">
+      <style>{`
+        @keyframes scrollDot {
+          0%, 100% { transform: translateY(0); opacity: 1; }
+          50% { transform: translateY(8px); opacity: 0.3; }
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatY {
+          0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+          50% { transform: translateY(-14px) rotate(var(--rot, 0deg)); }
+        }
+        .marquee-track { animation: marquee 22s linear infinite; }
+        .marquee-track:hover { animation-play-state: paused; }
+
+        @keyframes blobMorph {
+          0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: scale(1) rotate(0deg); }
+          50%  { border-radius: 40% 60% 70% 30% / 50% 60% 40% 50%; transform: scale(1.05) rotate(8deg); }
+          100% { border-radius: 30% 70% 40% 60% / 40% 50% 60% 50%; transform: scale(0.98) rotate(-4deg); }
+        }
+      `}</style>
+
+      {/* ── 1. NAVBAR ── */}
+      <PublicNavbar onNavigate={onNavigate} activePage="landing" scrolled={scrolled} />
+
+      {/* ── 2. HERO ── */}
+      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
+        {/* Background crossfade — bergantian sesuai heroIdx */}
+        {heroSlides.map((slide, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+              i === heroIdx ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{ backgroundImage: `url(${slide.image})` }}
+          />
+        ))}
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+
+        {/* Floating stat cards — melayang di pojok hero */}
+        <FloatingStat
+          value={stats[0].value}
+          label={stats[0].label}
+          delay="0s"
+          rotate="-6deg"
+          className="top-[15%] left-4 md:left-30"
+        />
+        <FloatingStat
+          value={stats[1].value}
+          label={stats[1].label}
+          delay="0.8s"
+          rotate="6deg"
+          className="top-[15%] right-4 md:right-30"
+        />
+        <FloatingStat
+          value={stats[2].value}
+          label={stats[2].label}
+          delay="1.6s"
+          rotate="4deg"
+          className="bottom-[18%] left-4 md:left-36"
+        />
+        <FloatingStat
+          value={stats[3].value}
+          label={stats[3].label}
+          delay="2.4s"
+          rotate="-4deg"
+          className="bottom-[18%] right-4 md:right-36"
+        />
+
+        {/* Left arrow */}
+        <button
+          onClick={heroPrev}
+          className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
+          aria-label="Sebelumnya"
+        >
+          <ChevronLeft size={22} className="text-white" />
+        </button>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <p className="text-sky-300 text-xs font-bold tracking-[0.25em] uppercase mb-4">
+            Platform Bersatu
+          </p>
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg">
+            United{' '}
+            <span
+              key={heroIdx}
+              className="inline-block bg-sky-500 px-4 py-1 rounded-xl align-middle animate-[fadeIn_0.6s_ease]"
+            >
+              {heroSlides[heroIdx].highlight}
+            </span>
             <br />
-            <span className="text-sky-400">Smarter</span>
-            <br />
-            with INOTAL
+            Platform
           </h1>
 
-          <p className="text-gray-500 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl mx-auto">
-            INOTAL PARTNER is the gateway for organizations to collaborate, integrate, and
-            grow through trusted IT services and sustainable strategic alliances.
-          </p>
+          {/* Sub-headline — berganti seiring gambar */}
+          <div className="h-16 flex items-center justify-center mb-10 overflow-hidden">
+            <p
+              key={heroIdx}
+              className="text-white/80 text-lg md:text-xl leading-relaxed max-w-xl animate-[fadeIn_0.6s_ease]"
+            >
+              {heroSlides[heroIdx].subline}
+            </p>
+          </div>
 
-          {/* CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={() => onNavigate?.('register')}
-              className="group flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-200"
+              className="bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-900/30 text-sm"
             >
-              Register as a Partner
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              Gabung
             </button>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-sky-500 px-6 py-3.5 rounded-xl border border-gray-200 hover:border-sky-300 transition-all text-sm font-medium">
-              Learn More <ChevronRight size={16} />
+            <button className="border border-white/40 hover:border-white/70 text-white font-semibold px-8 py-3.5 rounded-xl transition-all text-sm hover:bg-white/10">
+              Pelajari
             </button>
           </div>
-        </div>
-      </section>
 
-      {/* PARTNER LOGOS */}
-      <section id="partners" className="px-6 py-12 bg-sky-50/60 border-y border-sky-100">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-xs text-sky-400 font-semibold tracking-[0.2em] uppercase mb-8">
-            Trusted by Our Partners
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-            {partners.map((name) => (
-              <div
-                key={name}
-                className="flex items-center justify-center bg-white border border-sky-100 rounded-xl px-6 py-3 min-w-[140px] h-14 shadow-sm hover:shadow-md hover:border-sky-300 transition-all"
-              >
-                <span className="text-sm font-semibold text-gray-400 text-center leading-tight">
-                  {name}
-                </span>
-              </div>
+          {/* Dots */}
+          <div className="flex items-center justify-center gap-2 mt-8">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setHeroIdx(i)}
+                className={`rounded-full transition-all ${
+                  i === heroIdx ? 'w-6 h-2 bg-sky-400' : 'w-2 h-2 bg-white/30'
+                }`}
+              />
             ))}
           </div>
         </div>
+
+        {/* Right arrow */}
+        <button
+          onClick={heroNext}
+          className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
+          aria-label="Berikutnya"
+        >
+          <ChevronRight size={22} className="text-white" />
+        </button>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
+          <ScrollIndicator />
+        </div>
       </section>
 
-      {/* SERVICES GRID */}
-      <section id="services" className="px-6 py-20 bg-white">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-14">
+      {/* ── 3. PARTNERSHIP  */}
+      <section className="px-6 py-20 md:py-28 bg-white overflow-hidden">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+
+          {/* ── KOLOM KIRI: Visual (blob + foto overlap) ── */}
+          <div className="order-2 lg:order-1 relative mx-auto w-full max-w-sm lg:max-w-none h-[420px] sm:h-[480px]">
+
+            {/* Organic gradient blob — latar belakang */}
+            <div
+              className="absolute inset-0 m-auto w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-gradient-to-br from-sky-300 via-violet-300 to-emerald-200 opacity-70 blur-2xl"
+              style={{
+                borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+                animation: 'blobMorph 14s ease-in-out infinite alternate',
+              }}
+            />
+
+            {/* Foto belakang — lebih besar, posisi atas-kiri */}
+            <div className="absolute top-2 left-0 sm:left-4 w-[72%] aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl ring-4 ring-white">
+              <img
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+                alt="Tim berdiskusi dalam pertemuan strategis"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Foto depan — lebih kecil, overlap kanan-bawah, melayang */}
+            <div
+              className="absolute bottom-2 right-0 sm:right-2 w-[58%] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white"
+              style={{ animation: 'floatY 5s ease-in-out infinite' }}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=600&q=80"
+                alt="Jabat tangan kemitraan bisnis"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Chip statistik melayang — konsisten dengan gaya hero */}
+            <div
+              className="hidden sm:flex absolute -top-2 right-4 items-center gap-2 bg-white rounded-full shadow-lg pl-2 pr-4 py-2"
+              style={{ animation: 'floatY 4.5s ease-in-out 1s infinite' }}
+            >
+              <span className="w-8 h-8 rounded-full bg-sky-500 text-white text-xs font-extrabold flex items-center justify-center">
+                7+
+              </span>
+              <span className="text-gray-700 text-xs font-semibold">Partnership Aktif</span>
+            </div>
+          </div>
+
+          {/* ── KOLOM KANAN: Konten & Kartu (staggered 2x2) ── */}
+          <div className="order-1 lg:order-2">
             <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">
-              What We Offer
+              Layanan Kami
             </p>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
-              Everything You Need
-              <br />
-              for Modern Partnerships
+              Partnership
             </h2>
-            <p className="text-gray-400 text-base max-w-xl mx-auto">
-              From consultation to development — designed for your business operational complexities.
+            <p className="text-gray-400 text-base leading-relaxed mb-10 max-w-md">
+              Empat pilar layanan yang kami rancang untuk mendampingi transformasi
+              digital bisnis Anda, dari strategi hingga eksekusi.
             </p>
-          </div>
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {services.map(({ icon: Icon, title, description }) => (
-              <div
-                key={title}
-                className="group relative bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100 transition-all duration-300 cursor-default"
-              >
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-sky-50 group-hover:bg-sky-100 flex items-center justify-center mb-5 transition-colors">
-                  <Icon size={22} className="text-sky-500" />
-                </div>
-
-                {/* Title */}
-                <h3 className="font-bold text-sm tracking-wider text-gray-800 mb-3 leading-snug">
-                  {title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  {description}
-                </p>
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Kolom kartu kiri */}
+              <div className="flex flex-col gap-5">
+                {partnershipBoxes.slice(0, 2).map(({ icon: Icon, title, desc }) => (
+                  <div
+                    key={title}
+                    className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:shadow-sky-100 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center"
+                  >
+                    <div className="mb-9 mt-2">
+                      <Icon size={70} className="text-sky-500" />
+                    </div>
+                    <h3 className="font-bold text-sm tracking-wide text-gray-800 mb-2 uppercase">
+                      {title}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {/* Kolom kartu kanan — offset ke bawah */}
+              <div className="flex flex-col gap-5 sm:mt-10">
+                {partnershipBoxes.slice(2, 4).map(({ icon: Icon, title, desc }) => (
+                  <div
+                    key={title}
+                    className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:shadow-sky-100 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center"
+                  >
+                    <div className="mb-9 mt-2">
+                      <Icon size={70} className="text-sky-500" />
+                    </div>
+                    <h3 className="font-bold text-sm tracking-wide text-gray-800 mb-2 uppercase">
+                      {title}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+
         </div>
       </section>
 
-      {/* CTA BANNER */}
-      <section id="contact" className="px-6 py-16 bg-sky-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white border border-sky-200 rounded-3xl px-8 md:px-14 py-14 shadow-sm">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-              <div>
-                <p className="text-sky-500 text-xs font-bold tracking-widest uppercase mb-3">Get Started</p>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
-                  Ready to Partner with Us?
-                </h2>
-                <p className="text-gray-400 text-base max-w-lg">
-                  Log in to your account or register your organization to begin the partnership process
-                  and access our complete service portfolio.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                <button
-                  onClick={() => onNavigate?.('login')}
-                  className="bg-white text-sky-600 font-bold px-8 py-3.5 rounded-xl hover:bg-sky-50 transition-colors text-sm whitespace-nowrap border border-sky-200"
+      {/* ── 4. EVENT UPDATE (Carousel) ── */}
+      <section className="px-6 py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                Agenda Terkini
+              </p>
+              <h2 className="text-3xl font-extrabold text-gray-900">Event Update</h2>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={eventC.prev}
+                disabled={!eventC.canPrev}
+                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={eventC.next}
+                disabled={!eventC.canNext}
+                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Cards window */}
+          <div className="overflow-hidden">
+            <div
+              className="flex gap-5 transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(calc(-${eventC.idx} * (100% / 3 + 6.67px)))` }}
+            >
+              {events.map((ev, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all duration-300"
                 >
-                  Log In
-                </button>
-                <button
-                  onClick={() => onNavigate?.('register')}
-                  className="bg-sky-500 hover:bg-sky-600 text-white font-bold px-8 py-3.5 rounded-xl transition-colors text-sm whitespace-nowrap shadow-lg shadow-sky-200"
+                  {/* Image placeholder */}
+                  <div className="h-44 bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
+                    <span className="text-sky-400 text-4xl font-extrabold opacity-30">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="font-bold text-gray-800 text-sm leading-snug">{ev.title}</h3>
+                    </div>
+                    <p className="text-sky-500 text-xs font-semibold mb-3">{ev.date}</p>
+                    <p className="text-gray-400 text-sm leading-relaxed">{ev.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile: 1 per row */}
+          <style>{`
+            @media (max-width: 768px) {
+              .event-card { width: calc(100% - 0px) !important; }
+              .event-slider > div { transform: translateX(calc(-${eventC.idx} * (100% + 20px))) !important; }
+            }
+          `}</style>
+        </div>
+      </section>
+
+      {/* ── 5. SOSOK INSPIRASI (Carousel 2 per layar) ── */}
+      <section className="px-6 py-20 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                Suara dari Mereka
+              </p>
+              <h2 className="text-3xl font-extrabold text-gray-900">Sosok Inspirasi</h2>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={testiC.prev}
+                disabled={!testiC.canPrev}
+                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={testiC.next}
+                disabled={!testiC.canNext}
+                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-hidden">
+            <div
+              className="flex gap-5 transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(calc(-${testiC.idx} * (50% + 10px)))` }}
+            >
+              {testimonials.map((t, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 w-[calc(50%-10px)] bg-gray-50 border border-gray-100 rounded-2xl p-7 flex flex-col justify-between"
                 >
-                  Register Now
-                </button>
-              </div>
+                  <div>
+                    <Quote size={28} className="text-sky-300 mb-4" />
+                    <p className="text-gray-600 text-base leading-relaxed italic mb-6">
+                      "{t.quote}"
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sky-600 font-bold text-sm">{t.initials}</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">{t.name}</p>
+                      <p className="text-gray-400 text-xs">{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* ── 6. PARTNER KAMI (Marquee) ── */}
+      <section className="py-14 bg-sky-50 border-y border-sky-100 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6 mb-8 text-center">
+          <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+            Dipercaya Oleh
+          </p>
+          <h2 className="text-2xl font-extrabold text-gray-900">Partner Kami</h2>
+        </div>
+        <div className="relative overflow-hidden">
+          <div className="marquee-track flex gap-8 w-max">
+            {[...partnerLogos, ...partnerLogos].map((name, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 bg-white border border-sky-100 rounded-xl px-6 py-3 h-14 flex items-center justify-center min-w-[150px] shadow-sm"
+              >
+                <span className="text-sm font-semibold text-gray-400 whitespace-nowrap">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. SAATNYA BERSAMA BERAKSI (6 Kotak) ── */}
+      <section className="px-6 py-20 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">
+              Mengapa Bergabung
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Saatnya Bersama Beraksi
+            </h2>
+            <p className="text-gray-400 text-base max-w-xl mx-auto">
+              Indonesia butuh pemuda generasi masa depan emas 2045.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {actionBoxes.map(({ title, desc, color, textColor }) => (
+              <div
+                key={title}
+                className={`${color} border rounded-2xl p-8 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 cursor-default`}
+              >
+                <h3 className={`${textColor} font-extrabold text-xl leading-snug`}>{title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. INFORMASI / BERITA ── */}
+      <section className="px-6 py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              Terbaru
+            </p>
+            <h2 className="text-3xl font-extrabold text-gray-900">Informasi & Berita</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {newsItems.map((news, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all duration-300 flex flex-row"
+              >
+                {/* Image — kiri */}
+                <div className="w-36 flex-shrink-0 bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
+                  <span className="text-sky-300 text-4xl font-extrabold opacity-40">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                {/* Content — kanan */}
+                <div className="p-5 flex flex-col justify-between flex-1 min-w-0">
+                  <div>
+                    <p className="text-sky-500 text-xs font-semibold mb-2">{news.date}</p>
+                    <h3 className="font-bold text-gray-800 text-sm leading-snug mb-3">
+                      {news.title}
+                    </h3>
+                    <p className="text-gray-400 text-xs leading-relaxed line-clamp-3">{news.excerpt}</p>
+                  </div>
+                  <button className="mt-4 text-sky-500 text-xs font-bold hover:text-sky-600 transition-colors self-start tracking-wider">
+                    READ MORE
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 9. CTA KONSULTASI ── */}
+      <section
+        className="relative px-6 py-20"
+        style={{
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVpbGRpbmd8ZW58MHx8MHx8fDA%3D)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        <div className="relative z-10 max-w-5xl mx-auto text-center">
+          {/* CTA text */}
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-snug mb-5 max-w-3xl mx-auto">
+            SIAP Menjadi Bagian INOTAL Partner?
+          </h2>
+          <h3 className="text-lg md:text-xl font-medium text-white/80 leading-relaxed mb-8 max-w-2xl mx-auto">
+            Bergabunglah dengan X stakeholder dalam program digital dan transformasi masa depan
+          </h3>
+          <button
+            onClick={() => onNavigate?.('register')}
+            className="bg-sky-400 hover:bg-sky-300 text-white font-bold px-10 py-4 rounded-xl transition-all text-sm tracking-wider"
+          >
+            GABUNG SEKARANG
+          </button>
+        </div>
+      </section>
+
+      {/* ── 10. FOOTER ── */}
       <footer className="bg-gray-900 text-gray-400 px-6 pt-14 pb-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Top row */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
-            {/* Brand col */}
-            <div className="md:col-span-2">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+            {/* Kolom 1 */}
+            <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
                   <span className="text-white font-extrabold text-xs">IN</span>
@@ -231,78 +790,75 @@ export default function LandingPage({ onNavigate }) {
                   INOTAL<span className="text-sky-400">PARTNER</span>
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-gray-500 mb-2">
-                INOTAL International
+              <p className="text-sm leading-relaxed text-gray-400 mb-5">
+                Menyatukan potensi bangsa tuk kebangkitan emas 2045
               </p>
-              <p className="text-sm leading-relaxed text-gray-500 mb-1">
-                Jl. Placeholder No. 123, South Jakarta
-              </p>
-              <p className="text-sm leading-relaxed text-gray-500 mb-1">
-                DKI Jakarta, Indonesia 12345
-              </p>
-              <p className="text-sm leading-relaxed text-gray-500 mt-3">
-                info@inotal.co.id
-              </p>
-              <p className="text-sm leading-relaxed text-gray-500">
-                +62 21 1234 5678
-              </p>
+              <div className="flex items-start gap-2 text-sm text-gray-500 mb-2">
+                <MapPin size={14} className="mt-0.5 flex-shrink-0 text-sky-500" />
+                <span>Jl. Placeholder No. 123, Jakarta Selatan, DKI Jakarta 12345</span>
+              </div>
+              <div className="flex items-center gap-3 mt-5">
+                <a
+                  href="#"
+                  aria-label="Instagram"
+                  className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center hover:bg-sky-500 hover:border-sky-500 transition-all group"
+                >
+                  <Camera size={16} className="text-gray-400 group-hover:text-white transition-colors" />
+                </a>
+                <a
+                  href="#"
+                  aria-label="WhatsApp"
+                  className="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center hover:bg-green-500 hover:border-green-500 transition-all group"
+                >
+                  <Phone size={16} className="text-gray-400 group-hover:text-white transition-colors" />
+                </a>
+              </div>
             </div>
 
-            {/* Link cols */}
-            {Object.entries(footerLinks).map(([heading, links]) => (
-              <div key={heading}>
-                <h4 className="text-white font-semibold text-sm mb-4">{heading}</h4>
-                <ul className="space-y-2.5">
-                  {links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-sm text-gray-500 hover:text-sky-400 transition-colors">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-
-            {/* Social col */}
+            {/* Kolom 2: PROFIL */}
             <div>
-              <h4 className="text-white font-semibold text-sm mb-4">Follow Us</h4>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { icon: Camera, label: 'Instagram' },
-                  { icon: Briefcase, label: 'LinkedIn' },
-                  { icon: Hash, label: 'Twitter / X' },
-                  { icon: Globe, label: 'Facebook' },
-                  { icon: Play, label: 'YouTube' },
-                ].map(({ icon: SocialIcon, label }) => (
-                  <a
-                    key={label}
-                    href="#"
-                    aria-label={label}
-                    className="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center hover:bg-sky-500 hover:border-sky-500 transition-all group"
-                  >
-                    <SocialIcon size={17} className="text-gray-400 group-hover:text-white transition-colors" />
-                  </a>
+              <h4 className="text-white font-semibold text-sm mb-5 tracking-wider uppercase">
+                Profil
+              </h4>
+              <ul className="space-y-3">
+                {footerProfil.map((item) => (
+                  <li key={item}>
+                    <a href="#" className="text-sm text-gray-500 hover:text-sky-400 transition-colors">
+                      {item}
+                    </a>
+                  </li>
                 ))}
-              </div>
-              <p className="text-xs text-gray-600 mt-5 leading-relaxed">
-                Follow us for the latest updates on partnerships, technology, and INOTAL innovations.
-              </p>
+              </ul>
+            </div>
+
+            {/* Kolom 3: PARTNERSHIP */}
+            <div>
+              <h4 className="text-white font-semibold text-sm mb-5 tracking-wider uppercase">
+                Partnership
+              </h4>
+              <ul className="space-y-3">
+                {footerPartnership.map((item) => (
+                  <li key={item}>
+                    <a href="#" className="text-sm text-gray-500 hover:text-sky-400 transition-colors">
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Divider */}
+          {/* Bottom bar */}
           <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
-            <span>© {new Date().getFullYear()} INOTAL International. All rights reserved.</span>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-sky-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-sky-400 transition-colors">Terms & Conditions</a>
-              <a href="#" className="hover:text-sky-400 transition-colors">Cookies</a>
+            <div className="flex gap-5">
+              <a href="#" className="hover:text-sky-400 transition-colors">Kebijakan Privasi</a>
+              <span>|</span>
+              <a href="#" className="hover:text-sky-400 transition-colors">Kebijakan Pengguna</a>
             </div>
+            <span>Copyright © INOTAL Partner</span>
           </div>
         </div>
       </footer>
-
     </div>
   )
 }
