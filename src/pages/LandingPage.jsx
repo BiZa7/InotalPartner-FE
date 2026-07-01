@@ -13,6 +13,8 @@ import {
   MousePointer,
   Quote,
   Camera,
+  Calendar,
+  Users,
 } from 'lucide-react'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -67,39 +69,51 @@ const partnershipBoxes = [
 
 const events = [
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
     title: 'Workshop Transformasi Digital',
     date: '10 Agustus 2025',
+    location: 'Jakarta Selatan',
+    quota: '80 Peserta',
     desc: 'Pelajari strategi transformasi digital terkini bersama para praktisi dan pakar industri terpilih.',
   },
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
     title: 'Summit INOTAL 2025',
     date: '22 September 2025',
+    location: 'Jakarta Convention Center',
+    quota: '300 Peserta',
     desc: 'Pertemuan tahunan para mitra strategis untuk membahas inovasi dan peluang kolaborasi ke depan.',
   },
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
     title: 'Bootcamp Kepemimpinan Pemuda',
     date: '5 Oktober 2025',
+    location: 'Bandung, Jawa Barat',
+    quota: '60 Peserta',
     desc: 'Program intensif pengembangan jiwa kepemimpinan bagi generasi muda potensial Indonesia.',
   },
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
     title: 'Forum Keberlanjutan Bisnis',
     date: '18 Oktober 2025',
+    location: 'Surabaya, Jawa Timur',
+    quota: '120 Peserta',
     desc: 'Diskusi mendalam mengenai praktik bisnis berkelanjutan dan dampak jangka panjang bagi ekosistem.',
   },
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
     title: 'Pelatihan AI untuk UMKM',
     date: '2 November 2025',
+    location: 'Yogyakarta',
+    quota: '100 Peserta',
     desc: 'Memberdayakan pelaku usaha kecil dan menengah dengan kecerdasan buatan yang praktis dan terjangkau.',
   },
   {
-    img: null,
+    img: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80',
     title: 'Gala Dinner Mitra 2025',
     date: '15 Desember 2025',
+    location: 'Jakarta Pusat',
+    quota: '250 Undangan',
     desc: 'Malam apresiasi bagi seluruh mitra dan alumni yang telah berkontribusi nyata bagi ekosistem INOTAL.',
   },
 ]
@@ -109,40 +123,33 @@ const testimonials = [
     quote: 'INOTAL membuka wawasan saya tentang bagaimana teknologi dan kolaborasi bisa berjalan beriringan untuk membangun Indonesia yang lebih maju.',
     name: 'Andi Prasetyo',
     role: 'CEO, TechNusa Ventures',
-    initials: 'AP',
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
   },
   {
     quote: 'Program kemitraan INOTAL memberikan saya akses ke jaringan yang tidak ternilai. Dalam 6 bulan, bisnis kami berkembang pesat berkat ekosistem ini.',
     name: 'Sari Dewi',
     role: 'Founder, GreenLoop ID',
-    initials: 'SD',
+    img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
   },
   {
     quote: 'Sebagai pemuda yang baru terjun ke dunia bisnis, INOTAL hadir sebagai mentor sekaligus jembatan menuju peluang yang lebih besar.',
     name: 'Bima Sakti',
     role: 'Direktur, Inovasi Muda',
-    initials: 'BS',
+    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
   },
   {
-    quote: 'Kualitas program pelatihan INOTAL jauh melampaui ekspektasi kami. Tim profesional dan kurikulumnya relevan dengan kebutuhan industri saat ini.',
+    quote: 'Kualitas program pelatihan INOTAL jauh melampaui ekspektasi kami. Tim profesional dan kurikulumnya relevan.',
     name: 'Rina Melati',
     role: 'VP Strategy, DataCore Asia',
-    initials: 'RM',
+    img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
   },
 ]
 
-const partnerLogos = [
-  'Kementerian Kominfo',
-  'Kementerian BUMN',
-  'RSUP Fatmawati',
-  'RS Siloam Group',
-  'Telkom Indonesia',
-  'Bank BRI',
-  'Pertamina',
-  'PLN',
-  'Bulog',
-  'Kemenkes RI',
-]
+const allPartners = [
+  'Kementerian Kominfo', 'Kementerian BUMN', 'RSUP Fatmawati', 'RS Siloam Group',
+  'Telkom Indonesia', 'Bank BRI', 'Pertamina', 'PLN', 'Bulog', 'Kemenkes RI',
+  'Gojek', 'Tokopedia', 'Traveloka', 'OVO', 'Dana', 'Shopee', 'Blibli', 'Lazada'
+];
 
 const actionBoxes = [
   {
@@ -185,18 +192,37 @@ const actionBoxes = [
 
 const newsItems = [
   {
-    date: '25 Juni 2025',
+    category: 'Kabar Utama',
     title: 'INOTAL Resmi Jalin Kemitraan dengan 3 Kementerian Republik Indonesia',
-    excerpt:
-      'Langkah bersejarah bagi ekosistem INOTAL: penandatanganan MoU dengan tiga kementerian strategis membuka peluang program nasional yang lebih luas dan berdampak bagi generasi muda.',
+    excerpt: 'Langkah bersejarah bagi ekosistem INOTAL: penandatanganan MoU dengan tiga kementerian strategis membuka peluang program nasional yang lebih luas dan berdampak bagi generasi muda.',
+    img: 'https://img.magnific.com/foto-gratis/sekelompok-orang-bisnis-beragam-kerja-tim-sukses-bekerja-bersama-dengan-komputer-laptop-di-kantor_640221-492.jpg?semt=ais_hybrid&w=740&q=80',
+    date: '25 Juni 2025',
   },
   {
-    date: '10 Juni 2025',
+    category: 'Prestasi Alumni',
     title: '95 Alumni INOTAL Berhasil Masuk Ekosistem Startup dan Korporasi Nasional',
-    excerpt:
-      'Pencapaian luar biasa dari program akselerasi INOTAL: hampir serratus alumni kini berkarya di berbagai perusahaan dan startup terkemuka, membuktikan efektivitas platform kemitraan ini.',
+    img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80',
+    date: '10 Juni 2025',
   },
-]
+  {
+    category: 'Event',
+    title: 'Workshop Inovasi Digital Sukses Digelar di Kota Bandung',
+    img: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80',
+    date: '5 Juni 2025',
+  },
+  {
+    category: 'Kolaborasi',
+    title: 'Peluncuran Platform INOTALHub untuk Mendukung Digitalisasi UMKM',
+    img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=400&q=80',
+    date: '28 Mei 2025',
+  },
+  {
+    category: 'Insight',
+    title: 'Tren Teknologi 2025: Apa yang Harus Disiapkan Pemuda Indonesia?',
+    img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80',
+    date: '15 Mei 2025',
+  }
+];
 
 const stats = [
   { value: '2021', label: 'TAHUN BERDIRI' },
@@ -245,7 +271,7 @@ function useCarousel(total, perView = 1) {
   const maxIdx = Math.max(0, total - perView)
   const prev = () => setIdx((i) => Math.max(0, i - 1))
   const next = () => setIdx((i) => Math.min(maxIdx, i + 1))
-  return { idx, prev, next, canPrev: idx > 0, canNext: idx < maxIdx }
+  return { idx, setIdx, prev, next, canPrev: idx > 0, canNext: idx < maxIdx }
 }
 
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
@@ -269,9 +295,43 @@ export default function LandingPage({ onNavigate }) {
 
   // Event carousel
   const eventC = useCarousel(events.length, 3)
-  // Testimoni carousel (2 per view)
+ 
   const testiC = useCarousel(testimonials.length, 2)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      testiC.setIdx((currentIdx) => 
+        currentIdx >= testimonials.length - 2 ? 0 : currentIdx + 1
+      );
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
+  //State untuk 12 partner yang sedang tampil di layar
+  const [activePartners, setActivePartners] = useState(allPartners.slice(0, 12));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActivePartners(current => {
+        const newPartners = [...current];
+        // Pilih 1 sampai 3 kotak secara acak untuk diganti logonya
+        const numChanges = Math.floor(Math.random() * 3) + 1;
+
+        for (let i = 0; i < numChanges; i++) {
+          const slotIndex = Math.floor(Math.random() * 12); // 12 adalah jumlah grid
+          
+          // Cari partner yang belum ada di layar saat ini
+          const availablePartners = allPartners.filter(p => !newPartners.includes(p));
+
+          if (availablePartners.length > 0) {
+            const randomNew = availablePartners[Math.floor(Math.random() * availablePartners.length)];
+            newPartners[slotIndex] = randomNew;
+          }
+        }
+        return newPartners;
+      });
+    }, 3000); // Berubah setiap 3 detik
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="min-h-screen bg-white text-gray-800 font-sans overflow-x-hidden">
       <style>{`
@@ -478,7 +538,7 @@ export default function LandingPage({ onNavigate }) {
 
           {/* ── KOLOM KANAN: Konten & Kartu (staggered 2x2) ── */}
           <div className="order-1 lg:order-2">
-            <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">
+            <p className="text-sky-500 text-sm font-bold tracking-[0.2em] uppercase mb-3">
               Layanan Kami
             </p>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
@@ -536,7 +596,7 @@ export default function LandingPage({ onNavigate }) {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              <p className="text-sky-500 text-sm font-bold tracking-[0.2em] uppercase mb-2">
                 Agenda Terkini
               </p>
               <h2 className="text-3xl font-extrabold text-gray-900">Event Update</h2>
@@ -568,211 +628,375 @@ export default function LandingPage({ onNavigate }) {
               {events.map((ev, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all duration-300"
+                  // 1. Tinggi kartu diperbesar (h-[400px] & h-[440px])
+                  className="group relative flex-shrink-0 w-[calc(33.333%-14px)] h-[400px] sm:h-[440px] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
                 >
-                  {/* Image placeholder */}
-                  <div className="h-44 bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
-                    <span className="text-sky-400 text-4xl font-extrabold opacity-30">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-bold text-gray-800 text-sm leading-snug">{ev.title}</h3>
+                  {/* Background */}
+                  <img
+                    src={ev.img}
+                    alt={ev.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                  />
+
+                  {/* Gradient overlay - sedikit lebih gelap di atas/bawah agar teks putih menonjol */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/90 pointer-events-none" />
+
+                  {/* Judul — Diperbesar signifikan mengikuti Foto 1 */}
+                  <h3 className="absolute top-6 left-6 right-6 text-white font-extrabold text-2xl sm:text-[28px] uppercase leading-snug tracking-wide drop-shadow-lg">
+                    {ev.title}
+                  </h3>
+
+                  {/* Detail — Font & ikon diperbesar, jarak antar baris dilonggarkan */}
+                  <div className="absolute bottom-6 left-6 flex flex-col gap-2.5">
+                    <div className="flex items-center gap-2 text-white/95 text-sm font-medium">
+                      <Calendar size={16} className="text-white/80 flex-shrink-0" />
+                      <span>{ev.date}</span>
                     </div>
-                    <p className="text-sky-500 text-xs font-semibold mb-3">{ev.date}</p>
-                    <p className="text-gray-400 text-sm leading-relaxed">{ev.desc}</p>
+                    <div className="flex items-center gap-2 text-white/95 text-sm font-medium">
+                      <Users size={16} className="text-white/80 flex-shrink-0" />
+                      <span>{ev.quota}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/95 text-sm font-medium">
+                      <MapPin size={16} className="text-white/80 flex-shrink-0" />
+                      <span>{ev.location}</span>
+                    </div>
                   </div>
+
+                  {/* Tombol — Dibuat lebih lebar, tanpa ikon, seperti di Foto 1 */}
+                  <button className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-colors duration-300 shadow-md">
+                    Lihat
+                  </button>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Mobile: 1 per row */}
-          <style>{`
-            @media (max-width: 768px) {
-              .event-card { width: calc(100% - 0px) !important; }
-              .event-slider > div { transform: translateX(calc(-${eventC.idx} * (100% + 20px))) !important; }
-            }
-          `}</style>
         </div>
       </section>
 
-      {/* ── 5. SOSOK INSPIRASI (Carousel 2 per layar) ── */}
-      <section className="px-6 py-20 bg-white">
+     {/* ── 5. SOSOK INSPIRASI (Auto Carousel) ── */}
+      <section className="px-6 py-24 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-                Suara dari Mereka
-              </p>
-              <h2 className="text-3xl font-extrabold text-gray-900">Sosok Inspirasi</h2>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={testiC.prev}
-                disabled={!testiC.canPrev}
-                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={testiC.next}
-                disabled={!testiC.canNext}
-                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:border-sky-400 hover:text-sky-500 disabled:opacity-30 transition-all"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+          
+          {/* Header Tengah (Mengikuti Foto 1) */}
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-bold text-[#1a202c] leading-tight max-w-3xl mx-auto">
+              Ratusan partner di seluruh Indonesia,<br/>
+              tumbuh bersama dengan penuh kepercayaan
+            </h2>
           </div>
 
           <div className="overflow-hidden">
             <div
-              className="flex gap-5 transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(calc(-${testiC.idx} * (50% + 10px)))` }}
+              className="flex gap-8 transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(calc(-${testiC.idx} * (50% + 16px)))` }}
             >
               {testimonials.map((t, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 w-[calc(50%-10px)] bg-gray-50 border border-gray-100 rounded-2xl p-7 flex flex-col justify-between"
+                  // Responsif: di HP numpuk ke bawah, di layar besar nyamping
+                  className="flex-shrink-0 w-[calc(50%-16px)] flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6"
                 >
-                  <div>
-                    <Quote size={28} className="text-sky-300 mb-4" />
-                    <p className="text-gray-600 text-base leading-relaxed italic mb-6">
-                      "{t.quote}"
-                    </p>
+                  {/* Foto Profil */}
+                  <div className="w-24 h-24 sm:w-[110px] sm:h-[110px] flex-shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm bg-gray-100">
+                    <img src={t.img} alt={t.name} className="w-full h-full object-cover" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sky-600 font-bold text-sm">{t.initials}</span>
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-800 text-sm">{t.name}</p>
-                      <p className="text-gray-400 text-xs">{t.role}</p>
-                    </div>
+
+                  {/* Konten Teks */}
+                  <div className="flex flex-col text-center sm:text-left">
+                    <p className="text-[#0f172a] text-[15px] sm:text-[17px] font-medium italic leading-relaxed mb-4">
+                      {t.quote}
+                    </p>
+          
+                    {/* Nama */}
+                    <p className="font-bold text-[#0f172a] text-base">{t.name}</p>
+                    <p className="text-gray-500 text-sm">{t.role}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Navigasi Titik (Dots) di Bawah */}
+          <div className="flex items-center justify-center gap-2.5 mt-16">
+            {Array.from({ length: testimonials.length - 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => testiC.setIdx(i)}
+                className={`rounded-full transition-all duration-300 ${
+                  i === testiC.idx 
+                    ? 'w-3.5 h-3.5 bg-[#6366f1]' // Titik aktif (warna ungu/biru)
+                    : 'w-3.5 h-3.5 bg-gray-200 hover:bg-gray-300' // Titik pasif
+                }`}
+                aria-label={`Ke slide ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── 6. PARTNER KAMI (Marquee) ── */}
-      <section className="py-14 bg-sky-50 border-y border-sky-100 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-6 mb-8 text-center">
-          <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-            Dipercaya Oleh
-          </p>
-          <h2 className="text-2xl font-extrabold text-gray-900">Partner Kami</h2>
+      {/* ── 6. PARTNER KAMI (Dynamic Grid) ── */}
+      <section className="py-24 bg-white overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6 mb-14 text-center">
+          <h2 className="text-3xl md:text-5xl font-bold text-[#1a202c]">
+            Bergabunglah dengan Ekosistem Kami, Akselerasi Kemitraan Anda!
+          </h2>
         </div>
-        <div className="relative overflow-hidden">
-          <div className="marquee-track flex gap-8 w-max">
-            {[...partnerLogos, ...partnerLogos].map((name, i) => (
+
+        <div className="relative max-w-5xl mx-auto px-4">
+          {/* Efek Gradient Putih di Kiri & Kanan (Fade edges) */}
+          <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+          {/* Grid Container (2 Baris, 6 Kolom di Desktop) */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-5 relative z-0">
+            {activePartners.map((partner, idx) => (
               <div
-                key={i}
-                className="flex-shrink-0 bg-white border border-sky-100 rounded-xl px-6 py-3 h-14 flex items-center justify-center min-w-[150px] shadow-sm"
+                key={idx} // Index sebagai key kontainer agar posisinya tetap statis
+                className="w-full aspect-square bg-white border border-gray-50 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center p-4 sm:p-6"
               >
-                <span className="text-sm font-semibold text-gray-400 whitespace-nowrap">{name}</span>
+                <span
+                  key={partner}
+                  className="text-gray-400 font-bold text-xs sm:text-sm text-center animate-[fadeIn_0.6s_ease-in-out]"
+                >
+                  {/* Jika nanti Anda punya gambar: ganti span ini dengan tag <img> */}
+                  {partner}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── 7. SAATNYA BERSAMA BERAKSI (6 Kotak) ── */}
-      <section className="px-6 py-20 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">
+      {/* ── 7. SAATNYA BERSAMA BERAKSI (Interactive Layout) ── */}
+      <section className="relative px-6 py-24 bg-white overflow-hidden">
+        <div
+          className="absolute -top-24 -left-32 w-[480px] h-[480px] bg-gradient-to-br from-sky-200 to-sky-100 opacity-60 blur-3xl pointer-events-none"
+          style={{ borderRadius: '58% 42% 35% 65% / 55% 40% 60% 45%' }}
+        />
+        <div
+          className="absolute top-1/3 -right-20 w-[420px] h-[420px] bg-gradient-to-bl from-sky-100 to-blue-50 opacity-70 blur-3xl pointer-events-none"
+          style={{ borderRadius: '42% 58% 65% 35% / 45% 55% 40% 60%' }}
+        />
+        <div
+          className="absolute -bottom-32 left-1/4 w-[360px] h-[360px] bg-gradient-to-tr from-sky-100 to-sky-200 opacity-50 blur-3xl pointer-events-none"
+          style={{ borderRadius: '50% 50% 40% 60% / 60% 40% 60% 40%' }}
+        />
+        <div className="relative z-10 max-w-7xl mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-20">
+            <p className="text-sky-500 text-sm font-bold tracking-[0.2em] uppercase mb-4">
               Mengapa Bergabung
             </p>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-[#0f172a] mb-5">
               Saatnya Bersama Beraksi
             </h2>
-            <p className="text-gray-400 text-base max-w-xl mx-auto">
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
               Indonesia butuh pemuda generasi masa depan emas 2045.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {actionBoxes.map(({ title, desc, color, textColor }) => (
-              <div
-                key={title}
-                className={`${color} border rounded-2xl p-8 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 cursor-default`}
-              >
-                <h3 className={`${textColor} font-extrabold text-xl leading-snug`}>{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ── 8. INFORMASI / BERITA ── */}
-      <section className="px-6 py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-sky-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-              Terbaru
-            </p>
-            <h2 className="text-3xl font-extrabold text-gray-900">Informasi & Berita</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {newsItems.map((news, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all duration-300 flex flex-row"
-              >
-                {/* Image — kiri */}
-                <div className="w-36 flex-shrink-0 bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
-                  <span className="text-sky-300 text-4xl font-extrabold opacity-40">
-                    {String(i + 1).padStart(2, '0')}
+          {/* Grid Layout: Kiri (3 kotak), Tengah (Gambar Tumpuk), Kanan (3 kotak) */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-4">
+            
+            {/* Kolom Kiri */}
+            <div className="flex flex-col gap-6 w-full lg:w-[32%]">
+              {actionBoxes.slice(0, 3).map((box, idx) => (
+                <div
+                  key={box.title}
+                  className="group flex gap-5 items-start p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:bg-[#1a202c] transition-all duration-300 cursor-pointer"
+                >
+                  <span className="text-gray-300 group-hover:text-white font-bold text-3xl transition-colors duration-300">
+                    0{idx + 1}
                   </span>
-                </div>
-                {/* Content — kanan */}
-                <div className="p-5 flex flex-col justify-between flex-1 min-w-0">
                   <div>
-                    <p className="text-sky-500 text-xs font-semibold mb-2">{news.date}</p>
-                    <h3 className="font-bold text-gray-800 text-sm leading-snug mb-3">
-                      {news.title}
+                    <h3 className="text-xl font-bold text-[#0f172a] group-hover:text-white mb-2 transition-colors duration-300">
+                      {box.title}
                     </h3>
-                    <p className="text-gray-400 text-xs leading-relaxed line-clamp-3">{news.excerpt}</p>
+                    <p className="text-gray-500 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-300">
+                      {box.desc}
+                    </p>
                   </div>
-                  <button className="mt-4 text-sky-500 text-xs font-bold hover:text-sky-600 transition-colors self-start tracking-wider">
-                    READ MORE
-                  </button>
                 </div>
+              ))}
+            </div>
+
+            {/* Kolom Tengah (3 Foto Bertumpuk) */}
+            <div className="w-full sm:w-2/3 lg:w-[36%] flex items-center justify-center relative min-h-[380px] lg:min-h-[450px] my-10 lg:my-0">
+              {/* Dekorasi Blob Background */}
+              <div className="absolute inset-0 m-auto w-3/4 h-3/4 bg-gradient-to-tr from-sky-200 to-violet-200 rounded-full blur-3xl opacity-50 pointer-events-none" />
+
+              {/* Kontainer Foto Tumpuk */}
+              <div className="relative w-full max-w-[320px] h-[340px]">
+                {/* Foto 1 (Kiri Atas - Paling Belakang) */}
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&q=80"
+                  alt="Tim diskusi"
+                  className="absolute top-0 left-0 w-2/3 aspect-square object-cover  shadow-lg  -rotate-6 transition-transform duration-500 hover:scale-105 hover:z-30 cursor-pointer"
+                />
+                
+                {/* Foto 2 (Kanan Bawah - Tengah) */}
+                <img
+                  src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=500&q=80"
+                  alt="Kemitraan"
+                  className="absolute bottom-0 right-0 w-2/3 aspect-square object-cover  shadow-lg rotate-6 transition-transform duration-500 hover:scale-105 hover:z-30 cursor-pointer"
+                />
+
+                {/* Foto 3 (Tengah - Paling Depan) */}
+                <img
+                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&q=80"
+                  alt="Kolaborasi"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75%] aspect-[4/3] object-cover  shadow-2xl  z-20 transition-transform duration-500 hover:scale-105 cursor-pointer"
+                />
               </div>
-            ))}
+            </div>
+
+            {/* Kolom Kanan */}
+            <div className="flex flex-col gap-6 w-full lg:w-[32%]">
+              {actionBoxes.slice(3, 6).map((box, idx) => (
+                <div
+                  key={box.title}
+                  className="group flex gap-5 items-start p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:bg-[#1a202c] transition-all duration-300 cursor-pointer"
+                >
+                  <span className="text-gray-300 group-hover:text-white font-bold text-3xl transition-colors duration-300">
+                    0{idx + 4}
+                  </span>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#0f172a] group-hover:text-white mb-2 transition-colors duration-300">
+                      {box.title}
+                    </h3>
+                    <p className="text-gray-500 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-300">
+                      {box.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* ── 9. CTA KONSULTASI ── */}
-      <section
-        className="relative px-6 py-20"
-        style={{
-          backgroundImage:
-            'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVpbGRpbmd8ZW58MHx8MHx8fDA%3D)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
-        <div className="relative z-10 max-w-5xl mx-auto text-center">
-          {/* CTA text */}
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-snug mb-5 max-w-3xl mx-auto">
-            SIAP Menjadi Bagian INOTAL Partner?
-          </h2>
-          <h3 className="text-lg md:text-xl font-medium text-white/80 leading-relaxed mb-8 max-w-2xl mx-auto">
-            Bergabunglah dengan X stakeholder dalam program digital dan transformasi masa depan
-          </h3>
-          <button
-            onClick={() => onNavigate?.('register')}
-            className="bg-sky-400 hover:bg-sky-300 text-white font-bold px-10 py-4 rounded-xl transition-all text-sm tracking-wider"
-          >
-            GABUNG SEKARANG
-          </button>
+      {/* ── 8. INFORMASI / BERITA (Magazine Layout) ── */}
+      <section className="px-6 py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Header Layout (Kiri: Judul, Kanan: Link Lihat Semua) */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-gray-200 gap-4">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-[#0f172a]">
+                Informasi & Berita
+              </h2>
+            </div>
+            <a href="#" className="flex items-center gap-1 text-sky-500 font-semibold hover:text-sky-600 transition-colors">
+              Lihat semua <ChevronRight size={18} />
+            </a>
+          </div>
+
+          {/* Grid Utama (Kiri: 1 Berita Besar, Kanan: List Berita Kecil) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            {/* Berita Utama (Kiri - Memakan 7 kolom) */}
+            <div className="lg:col-span-7 group cursor-pointer">
+              <div className="overflow-hidden rounded-xl mb-5">
+                <img 
+                  src={newsItems[0].img} 
+                  alt={newsItems[0].title} 
+                  className="w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <p className="text-sky-600 font-semibold text-sm mb-2 uppercase tracking-wide">
+                {newsItems[0].category}
+              </p>
+              <h3 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-3 group-hover:text-sky-600 transition-colors leading-snug">
+                {newsItems[0].title}
+              </h3>
+              <p className="text-gray-600 text-base leading-relaxed">
+                {newsItems[0].excerpt}
+              </p>
+            </div>
+
+            {/* List Berita (Kanan - Memakan 5 kolom) */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              {newsItems.slice(1).map((news, i) => (
+                <div key={i} className="flex gap-4 group cursor-pointer items-center sm:items-start">
+                  
+                  {/* Thumbnail */}
+                  <div className="w-[120px] sm:w-[160px] aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg">
+                    <img 
+                      src={news.img} 
+                      alt={news.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+
+                  {/* Teks Konten */}
+                  <div className="flex flex-col justify-center py-1">
+                    <p className="text-sky-600 font-semibold text-xs mb-1.5 uppercase tracking-wide">
+                      {news.category}
+                    </p>
+                    <h4 className="font-bold text-[#0f172a] text-sm sm:text-base group-hover:text-sky-600 transition-colors leading-snug line-clamp-3">
+                      {news.title}
+                    </h4>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── 9. CTA KONSULTASI (Card Layout) ── */}
+      <section className="relative px-6 py-24 bg-gray-50 overflow-hidden">
+        
+        {/* Background Pattern (Ganti url() ini dengan gambar pattern geometris Anda jika ada) */}
+        <div 
+          className="absolute inset-0 opacity-50 pointer-events-none" 
+          style={{
+            backgroundImage: 'radial-gradient(#cbd5e1 2px, transparent 2px)', // Pola titik sementara
+            backgroundSize: '30px 30px'
+          }}
+        />
+        
+        {/* Card Container */}
+        <div className="relative z-10 max-w-6xl mx-auto bg-white rounded-[2rem] shadow-2xl border border-gray-100 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 lg:p-20 gap-10">
+          
+          {/* Kolom Kiri: Teks & Tombol */}
+          <div className="w-full md:w-3/5 flex flex-col items-center md:items-start text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0f172a] leading-tight mb-5">
+              SIAP Menjadi Bagian INOTAL Partner?
+            </h2>
+            <p className="text-gray-500 text-base md:text-lg leading-relaxed mb-8 max-w-lg">
+              Bergabunglah dengan X stakeholder dalam program digital dan transformasi masa depan
+            </p>
+            <button
+              onClick={() => onNavigate?.('register')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 text-sm tracking-wide"
+            >
+              GABUNG SEKARANG
+            </button>
+          </div>
+
+          {/* Kolom Kanan: Logo / Gambar Graphic */}
+          <div className="w-full md:w-2/5 flex justify-center md:justify-end">
+            
+            {/* Ganti elemen div ini dengan tag <img /> logo/grafik Anda */}
+            <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-900 rounded-lg transform rotate-12 flex items-center justify-center shadow-lg">
+               <span className="text-white font-bold rotate-[-12deg]">Logo Placeholder</span>
+            </div>
+            
+            {/* Contoh jika menggunakan gambar asli: 
+            <img 
+              src="URL_LOGO_ANDA.png" 
+              alt="Logo Partnership" 
+              className="w-48 sm:w-64 object-contain"
+            /> 
+            */}
+
+          </div>
+
         </div>
       </section>
 
