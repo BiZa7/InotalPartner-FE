@@ -15,6 +15,7 @@ import {
   Camera,
   Calendar,
   Users,
+  Video
 } from 'lucide-react'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -449,7 +450,7 @@ export default function LandingPage({ onNavigate }) {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={() => onNavigate?.('register')}
-              className="bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-900/30 text-sm"
+              className="bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-900/30 text-xl md:text-2xl"
             >
               Gabung
             </button>
@@ -914,6 +915,9 @@ export default function LandingPage({ onNavigate }) {
               <p className="text-gray-600 text-base leading-relaxed">
                 {newsItems[0].excerpt}
               </p>
+              <p className="text-gray-400 text-base mt-2">
+                {newsItems[0].date}
+              </p>
             </div>
 
             {/* List Berita (Kanan - Memakan 5 kolom) */}
@@ -938,6 +942,9 @@ export default function LandingPage({ onNavigate }) {
                     <h4 className="font-bold text-[#0f172a] text-sm sm:text-base group-hover:text-sky-600 transition-colors leading-snug line-clamp-3">
                       {news.title}
                     </h4>
+                    <p className="text-gray-400 text-base mt-2">
+                      {news.date}
+                    </p>
                   </div>
 
                 </div>

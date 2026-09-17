@@ -6,15 +6,61 @@ import ServiceDistributionChart from '../components/ServiceDistributionChart'
 import ActivePartnersList from '../components/ActivePartnersList'
 import CollaborationProjectsList from '../components/CollaborationProjectsList'
 import PlaceholderPage from '../components/PlaceholderPage'
+import ChangePasswordPage from './ChangePasswordPage'
+import UserPage from './UserPage'
+import CreatePost from './CreatePost'
+// 1. Import useAuth
+import { useAuth } from '../hooks/useAuth'
 
 export default function DashboardPage({ onNavigate }) {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // 2. Ambil data user dari hook
+  const { user } = useAuth()
+
+  // Ekstrak logika rendering ke fungsi terpisah agar lebih rapi
+  const renderContent = () => {
+    switch (activeNav) {
+      case 'dashboard':
+        return (
+          <>
+            {/* Page header */}
+            <div className="mb-6">
+              <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Dashboard Overview</h1>
+              <p className="text-sm text-gray-400 mt-0.5">Monitor partnership activities and ongoing projects.</p>
+            </div>
+
+            {/* Charts row */}
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 mb-5">
+              <MonthlyActivityChart />
+              <ServiceDistributionChart />
+            </div>
+
+            {/* Bottom row */}
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
+              <ActivePartnersList />
+              <CollaborationProjectsList />
+            </div>
+          </>
+        )
+      case 'changePassword':
+        return <ChangePasswordPage />
+      case 'users':
+        return <UserPage />
+      case 'post':
+        return <CreatePost />
+      default:
+        // Gunakan PlaceholderPage untuk menu lain (seperti 'company' atau 'settings')
+        return <PlaceholderPage activeNav={activeNav} />
+    }
+  }
+
   return (
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
       <Sidebar 
+        user={user} // 3. Teruskan prop user ke Sidebar agar menu terfilter dengan benar
         activeNav={activeNav} 
         setActiveNav={setActiveNav} 
         sidebarOpen={sidebarOpen} 
@@ -29,29 +75,8 @@ export default function DashboardPage({ onNavigate }) {
         />
 
         <main className="flex-1 overflow-y-auto p-5 lg:p-6">
-          {activeNav === 'dashboard' ? (
-            <>
-              {/* Page header */}
-              <div className="mb-6">
-                <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Dashboard Overview</h1>
-                <p className="text-sm text-gray-400 mt-0.5">Monitor partnership activities and ongoing projects.</p>
-              </div>
-
-              {/* Charts row */}
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 mb-5">
-                <MonthlyActivityChart />
-                <ServiceDistributionChart />
-              </div>
-
-              {/* Bottom row */}
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
-                <ActivePartnersList />
-                <CollaborationProjectsList />
-              </div>
-            </>
-          ) : (
-            <PlaceholderPage activeNav={activeNav} />
-          )}
+          {/* Panggil fungsi renderContent di sini */}
+          {renderContent()}
         </main>
       </div>
     </div>

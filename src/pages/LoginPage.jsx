@@ -50,7 +50,7 @@ export default function LoginPage({ onNavigate }) {
               <span className="text-white font-extrabold text-xs tracking-tight">IN</span>
             </div>
             <span className="font-extrabold text-xl text-white tracking-tight">
-              INOTAL <span className="text-sky-200">PARTNER</span>
+              INOTAL <span className="text-sky-400">PARTNER</span>
             </span>
           </div>
 

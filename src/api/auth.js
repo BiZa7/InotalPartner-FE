@@ -35,3 +35,13 @@ export const getMeApi = async () => {
 export const loginWithGoogle = () => {
   window.location.href = '/api/auth/google'
 }
+
+export const setupApi = async ({ fullName, company, email, password }) => {
+  const res = await api.post('/auth/setup', {
+    full_name: fullName,
+    company,
+    email,
+    password,
+  })
+  return res.data.data
+}

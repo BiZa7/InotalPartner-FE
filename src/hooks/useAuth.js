@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react'
 import { loginApi, registerApi, loginWithGoogle } from '../api/auth'
+// Tambahkan import dari api/users
+import { changePasswordApi } from '../api/users' 
 
 // Key untuk localStorage
 const TOKEN_KEY = 'inotal_token'
@@ -78,6 +80,22 @@ export function useAuth() {
     loginWithGoogle()
   }, [])
 
+  // ── Change Password ────────────────────────────────────────────
+  const changePassword = useCallback(async ({ oldPassword, newPassword, confirmPassword }) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await changePasswordApi({ oldPassword, newPassword, confirmPassword })
+      return data
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Gagal mengubah password'
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   // ── Logout ────────────────────────────────────────────────────
   const logout = useCallback(() => {
     clearSession()
@@ -87,6 +105,7 @@ export function useAuth() {
 
   return {
     user,
+    role: user?.role || 'guest', // Expose role langsung, default ke guest jika belum login
     token,
     loading,
     error,
@@ -94,6 +113,7 @@ export function useAuth() {
     login,
     register,
     googleLogin,
+    changePassword,
     logout,
     setError,
   }
