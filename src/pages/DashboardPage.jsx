@@ -9,35 +9,52 @@ import PlaceholderPage from '../components/PlaceholderPage'
 import ChangePasswordPage from './ChangePasswordPage'
 import UserPage from './UserPage'
 import CreatePost from './CreatePost'
-// 1. Import useAuth
+import PostList from './PostListPage' 
+
 import { useAuth } from '../hooks/useAuth'
 
 export default function DashboardPage({ onNavigate }) {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  // State untuk mode edit post
+  const [editingPost, setEditingPost] = useState(null)
 
-  // 2. Ambil data user dari hook
   const { user } = useAuth()
 
-  // Ekstrak logika rendering ke fungsi terpisah agar lebih rapi
+  // Handler navigasi: Batalkan mode edit jika user klik menu sidebar lain
+  const handleNav = (key) => { 
+    setEditingPost(null); 
+    setActiveNav(key) 
+  }
+
+  // Dipanggil dari PostList ketika tombol Edit ditekan
+  const handleEditPost = (postType, post) => {
+    setEditingPost({ postType, post })
+    setActiveNav('createPost')
+  }
+
+  // Dipanggil dari CreatePost ketika berhasil update atau batal edit
+  const finishEdit = () => { 
+    setEditingPost(null); 
+    setActiveNav('listPost') 
+  }
+
   const renderContent = () => {
     switch (activeNav) {
       case 'dashboard':
         return (
           <>
-            {/* Page header */}
             <div className="mb-6">
               <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Dashboard Overview</h1>
               <p className="text-sm text-gray-400 mt-0.5">Monitor partnership activities and ongoing projects.</p>
             </div>
 
-            {/* Charts row */}
             <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 mb-5">
               <MonthlyActivityChart />
               <ServiceDistributionChart />
             </div>
 
-            {/* Bottom row */}
             <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
               <ActivePartnersList />
               <CollaborationProjectsList />
@@ -48,10 +65,21 @@ export default function DashboardPage({ onNavigate }) {
         return <ChangePasswordPage />
       case 'users':
         return <UserPage />
-      case 'post':
-        return <CreatePost />
+        
+      case 'createPost':
+        return (
+          <CreatePost
+            // Key memaksa form direset setiap kali beralih antar post yang diedit atau ke post baru
+            key={editingPost ? `edit-${editingPost.post.id}` : 'new'}
+            editingPost={editingPost}
+            onFinishEdit={finishEdit}
+          />
+        )
+        
+      case 'listPost':
+        return <PostList onEdit={handleEditPost} />
+
       default:
-        // Gunakan PlaceholderPage untuk menu lain (seperti 'company' atau 'settings')
         return <PlaceholderPage activeNav={activeNav} />
     }
   }
@@ -60,9 +88,9 @@ export default function DashboardPage({ onNavigate }) {
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
       <Sidebar 
-        user={user} // 3. Teruskan prop user ke Sidebar agar menu terfilter dengan benar
+        user={user} 
         activeNav={activeNav} 
-        setActiveNav={setActiveNav} 
+        setActiveNav={handleNav} // Gunakan handleNav di sini
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen} 
         onNavigate={onNavigate} 
@@ -75,7 +103,6 @@ export default function DashboardPage({ onNavigate }) {
         />
 
         <main className="flex-1 overflow-y-auto p-5 lg:p-6">
-          {/* Panggil fungsi renderContent di sini */}
           {renderContent()}
         </main>
       </div>
