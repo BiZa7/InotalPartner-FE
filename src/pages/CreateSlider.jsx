@@ -261,6 +261,34 @@ export default function CreateSlider({
     setSaving(true);
 
     try {
+      const normalizedOrder = Number(order);
+
+      if (!Number.isInteger(normalizedOrder) || normalizedOrder < 1) {
+        throw new Error('Nomor urut slider harus berupa angka bulat minimal 1.');
+      }
+
+      // Cek lebih awal agar pengguna mendapat feedback sebelum proses upload gambar.
+      const response = await getBannersApi();
+      const existingBanners = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response?.banners)
+            ? response.banners
+            : [];
+
+      const duplicateOrder = existingBanners.find(
+        (banner) =>
+          Number(banner.order) === normalizedOrder &&
+          Number(banner.id) !== Number(editingSlider?.id)
+      );
+
+      if (duplicateOrder) {
+        throw new Error(
+          `Nomor urut ${normalizedOrder} sudah digunakan oleh slider lain. Silakan pilih nomor urut lain.`
+        );
+      }
+
       let backgroundImage = imageUrl;
 
       // Upload gambar baru terlebih dahulu
@@ -548,12 +576,17 @@ export default function CreateSlider({
             <input
               type="number"
               min="1"
+              step="1"
               value={order}
               onChange={(e) =>
                 setOrder(e.target.value)
               }
               className="w-full max-w-xs rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
+
+            <p className="mt-2 text-xs text-gray-500">
+              Nomor urut harus unik. Dua slider tidak boleh menggunakan nomor urut yang sama.
+            </p>
           </section>
         </aside>
       </div>
