@@ -8,6 +8,11 @@ import {
 } from '../api/posts'
 
 import {
+  getPublicBannersApi,
+  resolveBannerImageUrl,
+} from '../api/homepageBanners'
+
+import {
   MonitorCog,
   Layers,
   Settings2,
@@ -22,37 +27,6 @@ import {
 } from 'lucide-react'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
-
-const heroSlides = [
-  {
-    image:
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1600&q=80',
-    highlight: 'Keberlanjutan',
-    subline:
-      'Apapun itu, semangat keberlanjutan amat penting tuk masa depan.',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80',
-    highlight: 'Inovasi',
-    subline:
-      'Inovasi digital untuk transformasi bisnis dan ekosistem bangsa.',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80',
-    highlight: 'Kolaborasi',
-    subline:
-      'Bersama kita wujudkan Indonesia emas 2045 melalui kolaborasi nyata.',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1600&q=80',
-    highlight: 'Kemitraan',
-    subline:
-      'Platform tunggal untuk potensi, program, dan kemitraan strategis.',
-  },
-]
 
 const partnershipBoxes = [
   {
@@ -273,24 +247,90 @@ export default function LandingPage({ onNavigate }) {
     }
   }, [])
 
-  // Hero carousel
+  // Hero carousel dari database / public API
+  const [heroSlides, setHeroSlides] = useState([])
   const [heroIdx, setHeroIdx] = useState(0)
+  const [heroLoading, setHeroLoading] = useState(true)
+  const [heroError, setHeroError] = useState('')
 
   useEffect(() => {
+    let isMounted = true
+
+    const fetchBanners = async () => {
+      try {
+        setHeroLoading(true)
+        setHeroError('')
+
+        const response = await getPublicBannersApi()
+        const data = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response)
+            ? response
+            : []
+
+        const formattedSlides = data
+          .filter((banner) => banner?.is_active)
+          .sort((a, b) => {
+            const orderA = Number(a?.order) || 0
+            const orderB = Number(b?.order) || 0
+            return orderA - orderB || (Number(a?.id) || 0) - (Number(b?.id) || 0)
+          })
+          .map((banner) => ({
+            id: banner.id,
+            title: banner.title || '',
+            image: resolveBannerImageUrl(banner.background_image),
+            buttons: Array.isArray(banner.buttons) ? banner.buttons : [],
+          }))
+
+        if (isMounted) {
+          setHeroSlides(formattedSlides)
+          setHeroIdx(0)
+        }
+      } catch (error) {
+        console.error('Gagal mengambil slider Landing Page:', error)
+        if (isMounted) {
+          setHeroSlides([])
+          setHeroError(
+            error.message || 'Gagal mengambil slider Landing Page.'
+          )
+        }
+      } finally {
+        if (isMounted) setHeroLoading(false)
+      }
+    }
+
+    fetchBanners()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (heroSlides.length <= 1) return undefined
+
     const t = setInterval(() => {
       setHeroIdx((i) => (i + 1) % heroSlides.length)
     }, 5000)
 
     return () => clearInterval(t)
-  }, [])
+  }, [heroSlides.length])
+
+  useEffect(() => {
+    if (heroSlides.length === 0) {
+      setHeroIdx(0)
+    } else if (heroIdx >= heroSlides.length) {
+      setHeroIdx(0)
+    }
+  }, [heroSlides.length, heroIdx])
 
   const heroPrev = () => {
-    setHeroIdx(
-      (i) => (i - 1 + heroSlides.length) % heroSlides.length
-    )
+    if (heroSlides.length <= 1) return
+    setHeroIdx((i) => (i - 1 + heroSlides.length) % heroSlides.length)
   }
 
   const heroNext = () => {
+    if (heroSlides.length <= 1) return
     setHeroIdx((i) => (i + 1) % heroSlides.length)
   }
 
@@ -666,14 +706,12 @@ export default function LandingPage({ onNavigate }) {
       <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
         {heroSlides.map((slide, i) => (
           <div
-            key={i}
+            key={slide.id ?? i}
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
-              i === heroIdx
-                ? 'opacity-100'
-                : 'opacity-0'
+              i === heroIdx ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              backgroundImage: `url(${slide.image})`,
+              backgroundImage: slide.image ? `url(${slide.image})` : undefined,
             }}
           />
         ))}
@@ -712,83 +750,88 @@ export default function LandingPage({ onNavigate }) {
           className="bottom-[18%] right-4 md:right-36"
         />
 
-        <button
-          onClick={heroPrev}
-          className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
-          aria-label="Sebelumnya"
-        >
-          <ChevronLeft
-            size={22}
-            className="text-white"
-          />
-        </button>
-
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <p className="text-sky-300 text-xs font-bold tracking-[0.25em] uppercase mb-4">
-            Platform Bersatu
-          </p>
-
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg">
-            United{' '}
-            <span
-              key={heroIdx}
-              className="inline-block bg-sky-500 px-4 py-1 rounded-xl align-middle animate-[fadeIn_0.6s_ease]"
-            >
-              {heroSlides[heroIdx].highlight}
-            </span>
-
-            <br />
-
-            Platform
-          </h1>
-
-          <div className="h-16 flex items-center justify-center mb-10 overflow-hidden">
-            <p
-              key={heroIdx}
-              className="text-white/80 text-lg md:text-xl leading-relaxed max-w-xl animate-[fadeIn_0.6s_ease]"
-            >
-              {heroSlides[heroIdx].subline}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
-              onClick={() => onNavigate?.('register')}
-              className="bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-900/30 text-xl md:text-2xl"
-            >
-              Gabung
-            </button>
-
-            <button className="border border-white/40 hover:border-white/70 text-white font-semibold px-8 py-3.5 rounded-xl transition-all text-sm hover:bg-white/10">
-              Pelajari
-            </button>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 mt-8">
-            {heroSlides.map((_, i) => (
+        {heroSlides.length > 0 && (
+          <>
+            {heroSlides.length > 1 && (
               <button
-                key={i}
-                onClick={() => setHeroIdx(i)}
-                className={`rounded-full transition-all ${
-                  i === heroIdx
-                    ? 'w-6 h-2 bg-sky-400'
-                    : 'w-2 h-2 bg-white/30'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+                onClick={heroPrev}
+                className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
+                aria-label="Sebelumnya"
+              >
+                <ChevronLeft size={22} className="text-white" />
+              </button>
+            )}
 
-        <button
-          onClick={heroNext}
-          className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
-          aria-label="Berikutnya"
-        >
-          <ChevronRight
-            size={22}
-            className="text-white"
-          />
-        </button>
+            <div className="relative z-10 max-w-4xl mx-auto">
+              {heroSlides[heroIdx].title && (
+                <h1
+                  key={heroSlides[heroIdx].id}
+                  className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-10 drop-shadow-lg animate-[fadeIn_0.6s_ease]"
+                >
+                  {heroSlides[heroIdx].title}
+                </h1>
+              )}
+
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                {heroSlides[heroIdx].buttons
+                  .filter((button) => button?.label?.trim() && button?.url?.trim())
+                  .map((button, index) => (
+                    <a
+                      key={button.id ?? `${button.label}-${button.url}-${index}`}
+                      href={button.url}
+                      className="bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-900/30 text-lg md:text-xl"
+                    >
+                      {button.label}
+                    </a>
+                  ))}
+              </div>
+
+              {heroSlides.length > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  {heroSlides.map((slide, i) => (
+                    <button
+                      key={slide.id ?? i}
+                      onClick={() => setHeroIdx(i)}
+                      aria-label={`Slide ${i + 1}`}
+                      className={`rounded-full transition-all ${
+                        i === heroIdx
+                          ? 'w-6 h-2 bg-sky-400'
+                          : 'w-2 h-2 bg-white/30'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {heroSlides.length > 1 && (
+              <button
+                onClick={heroNext}
+                className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center transition-all"
+                aria-label="Berikutnya"
+              >
+                <ChevronRight size={22} className="text-white" />
+              </button>
+            )}
+          </>
+        )}
+
+        {heroLoading && (
+          <div className="relative z-10 text-white/80 text-lg">
+            Memuat slider...
+          </div>
+        )}
+
+        {!heroLoading && heroSlides.length === 0 && (
+          <div className="relative z-10 max-w-xl px-6 text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-lg">
+              {heroError ? 'Slider belum tersedia' : 'Selamat Datang'}
+            </h1>
+            {heroError && (
+              <p className="mt-4 text-white/70">{heroError}</p>
+            )}
+          </div>
+        )}
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
           <ScrollIndicator />

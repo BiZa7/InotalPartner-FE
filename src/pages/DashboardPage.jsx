@@ -9,7 +9,10 @@ import PlaceholderPage from '../components/PlaceholderPage'
 import ChangePasswordPage from './ChangePasswordPage'
 import UserPage from './UserPage'
 import CreatePost from './CreatePost'
-import PostList from './PostListPage' 
+import PostList from './PostListPage'
+import CreateSlider from './CreateSlider'
+import ListSliderPage from './ListSliderPage'
+
 
 import { useAuth } from '../hooks/useAuth'
 
@@ -17,14 +20,16 @@ export default function DashboardPage({ onNavigate }) {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   
-  // State untuk mode edit post
+  // State untuk mode edit 
   const [editingPost, setEditingPost] = useState(null)
+  const [editingSlider, setEditingSlider] = useState(null)
 
   const { user } = useAuth()
 
   // Handler navigasi: Batalkan mode edit jika user klik menu sidebar lain
   const handleNav = (key) => { 
-    setEditingPost(null); 
+    setEditingPost(null);
+    setEditingSlider(null);
     setActiveNav(key) 
   }
 
@@ -38,6 +43,16 @@ export default function DashboardPage({ onNavigate }) {
   const finishEdit = () => { 
     setEditingPost(null); 
     setActiveNav('listPost') 
+  }
+
+  const handleEditSlider = (slider) => {
+  setEditingSlider(slider)
+  setActiveNav('createSlider')
+}
+
+  const finishEditSlider = () => {
+    setEditingSlider(null)
+    setActiveNav('listSlider')
   }
 
   const renderContent = () => {
@@ -78,6 +93,30 @@ export default function DashboardPage({ onNavigate }) {
         
       case 'listPost':
         return <PostList onEdit={handleEditPost} />
+
+      case 'createSlider':
+        return (
+          <CreateSlider
+            key={
+              editingSlider
+                ? `edit-slider-${editingSlider.id}`
+                : 'new-slider'
+            }
+            editingSlider={editingSlider}
+            onFinishEdit={finishEditSlider}
+            onOpenList={() => {
+              setEditingSlider(null)
+              setActiveNav('listSlider')
+            }}
+          />
+        )
+
+      case 'listSlider':
+        return (
+          <ListSliderPage
+            onEdit={handleEditSlider}
+          />
+        )
 
       default:
         return <PlaceholderPage activeNav={activeNav} />

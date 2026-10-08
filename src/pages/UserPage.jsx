@@ -10,6 +10,10 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
+  // State untuk pencarian
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
@@ -22,24 +26,52 @@ export default function UserPage() {
   const [newRole, setNewRole] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 1. Effect untuk Debounce Pencarian (menunggu 500ms setelah selesai mengetik)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset ke halaman 1 saat pencarian berubah
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // 2. Effect untuk Mengambil Data
   useEffect(() => {
     let isMounted = true;
 
     const loadUsers = async () => {
       setLoading(true);
       setError('');
+
       try {
-        const response = await getUsersApi(page, limit);
+        const response = await getUsersApi(
+          page,
+          limit,
+          debouncedSearch
+        );
+
         if (isMounted) {
           setUsers(response.data || []);
           setTotalPages(response.total_pages || 1);
+
+          // Backend bisa mengoreksi page jika page sebelumnya
+          // sudah tidak tersedia setelah search/delete.
+          if (response.page && response.page !== page) {
+            setPage(response.page);
+          }
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.response?.data?.message || 'Gagal mengambil data pengguna');
+          setError(
+            err.response?.data?.message ||
+            'Gagal mengambil data pengguna'
+          );
         }
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -48,7 +80,7 @@ export default function UserPage() {
     return () => {
       isMounted = false;
     };
-  }, [page, refreshKey]);
+  }, [page, refreshKey, debouncedSearch]); // Trigger ulang jika page, refreshKey, atau debouncedSearch berubah
 
   const handleDelete = async (id, name) => {
     if (id === currentUser.id) {
@@ -131,15 +163,7 @@ export default function UserPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Manajemen Pengguna</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Kelola akses, role, dan data akun sistem.</p>
         </div>
-        
-        {canManage && (
-          <button className="flex items-center justify-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-            <Plus size={16} />
-            Tambah User
-          </button>
-        )}
       </div>
 
       {/* Content Area */}
@@ -149,9 +173,11 @@ export default function UserPage() {
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
           <div className="relative max-w-sm w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Cari user..." 
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari user..."
               className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-colors"
             />
           </div>
