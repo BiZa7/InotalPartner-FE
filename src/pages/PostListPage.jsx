@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Edit, Eye, Send, ArrowDownCircle, AlertCircle, ShieldAlert, X } from 'lucide-react';
 import { getPostsApi, publishPostApi, takedownPostApi, resolveImageUrl } from '../api/posts';
-import PostPreview from '../components/PostPreview';
+import PostPreview from '../components/Postpreview';
 import { useAuth } from '../hooks/useAuth';
 
 const POST_TYPES = [
