@@ -12,6 +12,7 @@ import CreatePost from './CreatePost'
 import PostList from './PostListPage'
 import CreateSlider from './CreateSlider'
 import ListSliderPage from './ListSliderPage'
+import KontakInboxPage from './KontakInboxPage'
 
 
 import { useAuth } from '../hooks/useAuth'
@@ -80,6 +81,9 @@ export default function DashboardPage({ onNavigate }) {
         return <ChangePasswordPage />
       case 'users':
         return <UserPage />
+
+      case 'contact':
+        return <KontakInboxPage />
         
       case 'createPost':
         return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { LayoutDashboard, Building2, Users, Settings, LogOut, Key, Pin, ChevronDown,GalleryVerticalEnd } from 'lucide-react'
+import { LayoutDashboard, Building2, Users, Settings, LogOut, Key, Pin, ChevronDown,GalleryVerticalEnd, MessageSquare } from 'lucide-react'
 
 export const navItems = [
   { key: 'dashboard', label: 'Dashboard',     icon: LayoutDashboard, roles: ['super_admin','admin','operator','guest'] },
@@ -14,6 +14,7 @@ export const navItems = [
       { key: 'listPost',   label: 'List Post' }
     ]
   },
+  { key: 'contact',   label: 'Kontak',        icon: MessageSquare,   roles: ['super_admin','admin','operator'] },
   { 
     key: 'slider',      
     label: 'Slider',        
