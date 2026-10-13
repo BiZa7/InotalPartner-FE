@@ -1534,7 +1534,7 @@ export default function LandingPage({ onNavigate }) {
 
             <button
               onClick={() => onNavigate?.('register')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 text-sm tracking-wide"
+              className="bg-sky-500 hover:bg-sky-600 text-white font-bold px-10 py-3.5 rounded-xl transition-all shadow-lg shadow-sky-500/30 text-sm tracking-wide"
             >
               GABUNG SEKARANG
             </button>

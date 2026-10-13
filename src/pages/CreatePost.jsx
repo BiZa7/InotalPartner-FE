@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { getCategoriesApi, getTagsApi, createCategoryApi, createTagApi } from "../api/taxonomy";
 import { createPostApi, updatePostApi, uploadImageApi, resolveImageUrl } from "../api/posts";
-import PostPreview from "../components/PostPreview";
+import PostPreview from "../components/Postpreview";
 import {
   Bold, CalendarDays, Eye, Hash, Italic, Link, List, Newspaper,
   Send, Tag, Trash2, Underline, Upload, X, BookOpen,
