@@ -9,8 +9,10 @@ export default function PublicNavbar({ onNavigate, activePage, scrolled }) {
     { label: 'Tentang',     page: 'tentang'      },
     { label: 'Program',     page: 'program'      },
     { label: 'Event',       page: 'event'        },
-    { label: 'Informasi',   page: 'informasi'    },
+    { label: 'Berita',      page: 'berita'       },
+    { label: 'Artikel',     page: 'artikel'      },
     { label: 'Partnership', page: 'partnership'  },
+    { label: 'Kontak',      page: 'kontak'       },
   ]
 
   const handleNav = (page) => {

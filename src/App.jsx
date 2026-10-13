@@ -6,14 +6,16 @@ import DashboardPage from './pages/DashboardPage'
 import TentangPage from './pages/FrontPage/TentangPage'
 import ProgramPage from './pages/FrontPage/ProgramPage'
 import EventPage from './pages/FrontPage/EventPage'
-import InformasiPage from './pages/FrontPage/InformasiPage'
+import BeritaPage from './pages/FrontPage/BeritaPage'
+import ArtikelPage from './pages/FrontPage/ArtikelPage'
 import PartnershipPage from './pages/FrontPage/PartnershipPage'
+import KontakPage from './pages/FrontPage/KontakPage'
 
 const PROTECTED_PAGES = ['dashboard']
 
 const ALL_PAGES = [
   'login', 'register', 'dashboard',
-  'tentang', 'program', 'event', 'informasi', 'partnership',
+  'tentang', 'program', 'event', 'berita', 'artikel', 'partnership', 'kontak',
 ]
 
 function getInitialPage() {
@@ -80,8 +82,10 @@ function App() {
   if (page === 'tentang')      return <TentangPage      onNavigate={navigate} />
   if (page === 'program')      return <ProgramPage      onNavigate={navigate} />
   if (page === 'event')        return <EventPage        onNavigate={navigate} />
-  if (page === 'informasi')    return <InformasiPage    onNavigate={navigate} />
+  if (page === 'berita')      return <BeritaPage      onNavigate={navigate} />
+  if (page === 'artikel')      return <ArtikelPage      onNavigate={navigate} />
   if (page === 'partnership')  return <PartnershipPage  onNavigate={navigate} />
+  if (page === 'kontak')       return <KontakPage       onNavigate={navigate} />
   return <LandingPage onNavigate={navigate} />
 }
 
