@@ -1,3 +1,4 @@
+import { useFeedback } from '../components/FeedbackUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Search,
@@ -42,6 +43,7 @@ const StatusBadge = ({ active }) => (
 );
 
 export default function ListSliderPage({ onEdit }) {
+  const { notify, confirmAction, FeedbackUI } = useFeedback();
   const { role } = useAuth();
 
   const isAdmin =
@@ -175,13 +177,10 @@ export default function ListSliderPage({ onEdit }) {
   // ---------------------------------------------------------
 
   const handlePublish = async (banner) => {
-    if (
-      !window.confirm(
-        `Upload "${banner.title || 'Slider tanpa judul'}" ke Landing Page?`
-      )
-    ) {
-      return;
-    }
+    if (!(await confirmAction(
+      `Upload "${banner.title || 'Slider tanpa judul'}" ke Landing Page?`,
+      { title: 'Publikasikan slider', confirmLabel: 'Ya, upload', danger: false }
+    ))) return;
 
     try {
       /*
@@ -204,27 +203,19 @@ export default function ListSliderPage({ onEdit }) {
         }
       );
 
-      alert(
-        'Slider berhasil di-upload ke Landing Page.'
-      );
+      notify('Slider berhasil di-upload ke Landing Page.');
 
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      alert(
-        err.message ||
-          'Gagal meng-upload slider ke Landing Page.'
-      );
+      notify(err.message || 'Gagal meng-upload slider ke Landing Page.', 'error');
     }
   };
 
   const handleTakedown = async (banner) => {
-    if (
-      !window.confirm(
-        `Turunkan "${banner.title || 'Slider tanpa judul'}" dari Landing Page?`
-      )
-    ) {
-      return;
-    }
+    if (!(await confirmAction(
+      `Turunkan "${banner.title || 'Slider tanpa judul'}" dari Landing Page?`,
+      { title: 'Turunkan slider', confirmLabel: 'Ya, turunkan' }
+    ))) return;
 
     try {
       /*
@@ -248,39 +239,28 @@ export default function ListSliderPage({ onEdit }) {
         }
       );
 
-      alert(
-        'Slider berhasil diturunkan dari Landing Page.'
-      );
+      notify('Slider berhasil diturunkan dari Landing Page.');
 
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      alert(
-        err.message ||
-          'Gagal menurunkan slider.'
-      );
+      notify(err.message || 'Gagal menurunkan slider.', 'error');
     }
   };
 
   const handleDelete = async (banner) => {
-    if (
-      !window.confirm(
-        `Hapus slider "${banner.title || 'Slider tanpa judul'}" secara permanen?`
-      )
-    ) {
-      return;
-    }
+    if (!(await confirmAction(
+      `Hapus slider "${banner.title || 'Slider tanpa judul'}" secara permanen? Tindakan ini tidak dapat dibatalkan.`,
+      { title: 'Hapus slider permanen', confirmLabel: 'Ya, hapus' }
+    ))) return;
 
     try {
       await deleteBannerApi(banner.id);
 
-      alert('Slider berhasil dihapus.');
+      notify('Slider berhasil dihapus.');
 
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      alert(
-        err.message ||
-          'Gagal menghapus slider.'
-      );
+      notify(err.message || 'Gagal menghapus slider.', 'error');
     }
   };
 
@@ -315,6 +295,7 @@ export default function ListSliderPage({ onEdit }) {
 
   return (
     <div className="flex h-full flex-col">
+      <FeedbackUI />
       {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-xl font-extrabold tracking-tight text-gray-900">

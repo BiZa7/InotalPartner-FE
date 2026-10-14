@@ -1,3 +1,4 @@
+import { useFeedback } from '../components/FeedbackUI';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Edit, Eye, Send, ArrowDownCircle, AlertCircle, ShieldAlert, X } from 'lucide-react';
 import { getPostsApi, publishPostApi, takedownPostApi, resolveImageUrl } from '../api/posts';
@@ -39,6 +40,7 @@ const StatusBadge = ({ status }) => {
 };
 
 export default function PostListPage({ onEdit }) {
+  const { notify, confirmAction, FeedbackUI } = useFeedback();
   const { role, user: currentUser } = useAuth();
 
   const isOperator = role === 'operator';
@@ -97,8 +99,12 @@ export default function PostListPage({ onEdit }) {
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // ── Permission helper ─────────────────────────────────────────────
-  const canEdit = (p) => isOperator && p.status === 'draft' && p.author_id === currentUser?.id;
-  const canPublish = (p) => isAdmin && p.status === 'draft';
+  const canEdit = (p) =>
+  isOperator &&
+  ['draft', 'taken_down'].includes(p.status) &&
+  p.author_id === currentUser?.id;
+  const canPublish = (p) =>
+  isAdmin && ['draft', 'taken_down'].includes(p.status);  
   const canTakedown = (p) => isAdmin && p.status === 'published';
 
   // ── Actions ───────────────────────────────────────────────────────
@@ -108,22 +114,28 @@ export default function PostListPage({ onEdit }) {
     (p.categories?.length ? p.categories : p.category?.name ? [p.category] : []).map((c) => c.name).join(', ');
 
   const handlePublish = async (p) => {
-    if (!window.confirm(`Publikasikan "${p.title}" ke Landing Page?`)) return;
+    if (!(await confirmAction(`Publikasikan "${p.title}" ke Landing Page?`, {
+      title: 'Publikasikan post', confirmLabel: 'Ya, publikasikan', danger: false,
+    }))) return;
     try {
       await publishPostApi(postType, p.id);
+      notify('Post berhasil dipublikasikan ke Landing Page.');
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal mempublikasikan post');
+      notify(err.response?.data?.message || 'Gagal mempublikasikan post', 'error');
     }
   };
 
   const handleTakedown = async (p) => {
-    if (!window.confirm(`Turunkan "${p.title}" dari Landing Page? Post yang diturunkan tidak bisa dipublikasikan lagi.`)) return;
+    if (!(await confirmAction(`Turunkan "${p.title}" dari Landing Page? Post yang diturunkan tidak bisa dipublikasikan lagi.`, {
+      title: 'Turunkan post', confirmLabel: 'Ya, turunkan',
+    }))) return;
     try {
       await takedownPostApi(postType, p.id);
+      notify('Post berhasil diturunkan dari Landing Page.');
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal menurunkan post');
+      notify(err.response?.data?.message || 'Gagal menurunkan post', 'error');
     }
   };
 
@@ -131,6 +143,7 @@ export default function PostListPage({ onEdit }) {
 
   return (
     <div className="flex flex-col h-full relative">
+      <FeedbackUI />
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">
@@ -266,7 +279,7 @@ export default function PostListPage({ onEdit }) {
                             className={`${iconBtn} ${
                               canEdit(p) ? 'hover:text-sky-500 hover:bg-sky-50' : 'text-gray-300 cursor-not-allowed'
                             }`}
-                            title={canEdit(p) ? 'Edit draft' : 'Hanya draft milikmu yang bisa diedit'}
+                            title={canEdit(p) ? 'Edit post' : 'Hanya post milikmu yang bisa diedit'}
                           >
                             <Edit size={16} />
                           </button>

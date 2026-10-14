@@ -1,9 +1,11 @@
+import { useFeedback } from '../components/FeedbackUI';
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, AlertCircle, ShieldAlert } from 'lucide-react';
 import { getUsersApi, deleteUserApi, updateUserApi } from '../api/users';
 import { useAuth } from '../hooks/useAuth';
 
 export default function UserPage() {
+  const { notify, confirmAction, FeedbackUI } = useFeedback();
   const { role, user: currentUser } = useAuth();
   
   const [users, setUsers] = useState([]);
@@ -84,16 +86,19 @@ export default function UserPage() {
 
   const handleDelete = async (id, name) => {
     if (id === currentUser.id) {
-      alert("Anda tidak bisa menghapus akun Anda sendiri.");
+      notify("Anda tidak bisa menghapus akun Anda sendiri.", "error");
       return;
     }
     
-    if (window.confirm(`Apakah Anda yakin ingin menghapus user "${name}"?`)) {
+    if (await confirmAction(`Apakah Anda yakin ingin menghapus user "${name}"? Tindakan ini tidak dapat dibatalkan.`, {
+      title: 'Hapus pengguna', confirmLabel: 'Ya, hapus',
+    })) {
       try {
         await deleteUserApi(id);
+        notify('Pengguna berhasil dihapus.');
         setRefreshKey(oldKey => oldKey + 1); 
       } catch (err) {
-        alert(err.response?.data?.message || 'Gagal menghapus user');
+        notify(err.response?.data?.message || 'Gagal menghapus user', 'error');
       }
     }
   };
@@ -101,7 +106,7 @@ export default function UserPage() {
   // Fungsi untuk membuka modal edit
   const openEditModal = (u) => {
     if (u.id === currentUser.id) {
-      alert("Anda tidak bisa mengubah role Anda sendiri dari halaman ini.");
+      notify("Anda tidak bisa mengubah role Anda sendiri dari halaman ini.", "error");
       return;
     }
 
@@ -109,7 +114,7 @@ export default function UserPage() {
 
     if (role === 'admin') {
       if (targetRole === 'super_admin' || targetRole === 'admin') {
-        alert("Admin tidak memiliki izin untuk mengubah akun Super Admin atau sesama Admin.");
+        notify("Admin tidak memiliki izin untuk mengubah akun Super Admin atau sesama Admin.", "error");
         return;
       }
     }
@@ -133,10 +138,11 @@ export default function UserPage() {
     setIsSubmitting(true);
     try {
       await updateUserApi(editingUser.id, { role: newRole });
+      notify('Role pengguna berhasil diperbarui.');
       setRefreshKey(oldKey => oldKey + 1); // Refresh tabel
       closeEditModal(); // Tutup popup
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal mengubah role user');
+      notify(err.response?.data?.message || 'Gagal mengubah role user', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -159,6 +165,7 @@ export default function UserPage() {
 
   return (
     <div className="flex flex-col h-full relative">
+      <FeedbackUI />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
