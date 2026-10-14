@@ -69,6 +69,22 @@ export const getPublicNewsApi = async (page = 1, limit = 10) => {
   return response.data
 }
 
+// Ambil detail berita publik berdasarkan slug. Endpoint backend ini juga
+// mencatat satu kunjungan setiap kali detail berhasil diminta.
+export const getPublicNewsBySlugApi = async (slug) => {
+  const response = await api.get(`/public/news/${encodeURIComponent(slug)}`)
+  return response.data
+}
+
+// Ambil berita dengan total view_count tertinggi dari backend.
+export const getPublicPopularNewsApi = async (limit = 5) => {
+  const response = await api.get('/public/popular/news', {
+    params: { limit },
+  })
+
+  return response.data
+}
+
 export const getPublicEventsApi = async (page = 1, limit = 10) => {
   const response = await api.get('/public/events', {
     params: {

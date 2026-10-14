@@ -1,3 +1,4 @@
+import { useFeedback } from "../components/FeedbackUI";
 import { useState, useRef, useEffect } from "react";
 import { getCategoriesApi, getTagsApi, createCategoryApi, createTagApi } from "../api/taxonomy";
 import { createPostApi, updatePostApi, uploadImageApi, resolveImageUrl } from "../api/posts";
@@ -11,6 +12,7 @@ const toLabel = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1) : "Event");
 
 // editingPost: { postType: 'news' | 'event' | 'article', post } — diisi saat klik Edit di daftar post
 export default function CreatePost({ editingPost = null, onFinishEdit }) {
+  const { notify, confirmAction, FeedbackUI } = useFeedback();
   const isEditing = !!editingPost;
   const editPost = editingPost?.post;
 
@@ -62,8 +64,8 @@ export default function CreatePost({ editingPost = null, onFinishEdit }) {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) return alert("Please upload an image file.");
-    if (file.size > 5 * 1024 * 1024) return alert("Image must be smaller than 5MB.");
+    if (!file.type.startsWith("image/")) return notify("Silakan pilih file gambar.", "error");
+    if (file.size > 5 * 1024 * 1024) return notify("Ukuran gambar maksimal 5MB.", "error");
 
     setImageFile(file);
     setFeaturedImage(URL.createObjectURL(file));
@@ -94,7 +96,7 @@ export default function CreatePost({ editingPost = null, onFinishEdit }) {
       setNewCategoryName("");
       setShowAddCategory(false);
     } catch (err) {
-      alert(err.response?.data?.message || "Gagal membuat kategori baru");
+      notify(err.response?.data?.message || "Gagal membuat kategori baru", "error");
     }
   };
 
@@ -151,9 +153,9 @@ export default function CreatePost({ editingPost = null, onFinishEdit }) {
   };
 
   const submitPost = async (statusLabel) => {
-    if (!title.trim()) return alert("Please enter a post title.");
-    if (!content.trim()) return alert("Please write some content.");
-    if (selectedCategoryIds.length === 0) return alert("Please select at least one category.");
+    if (!title.trim()) return notify("Silakan isi judul post.", "error");
+    if (!content.trim()) return notify("Silakan isi konten post.", "error");
+    if (selectedCategoryIds.length === 0) return notify("Silakan pilih minimal satu kategori.", "error");
 
     setIsSaving(true);
     setSubmitError("");
@@ -172,14 +174,14 @@ export default function CreatePost({ editingPost = null, onFinishEdit }) {
 
       if (isEditing) {
         await updatePostApi(editingPost.postType, editPost.id, payload);
-        alert("Perubahan berhasil disimpan.");
+        notify("Perubahan berhasil disimpan.");
         onFinishEdit?.();
         return;
       }
 
       await createPostApi(postType.toLowerCase(), payload);
       setStatus(statusLabel);
-      alert(`Berhasil! Pos disimpan sebagai ${statusLabel}.`);
+      notify(`Post berhasil disimpan sebagai ${statusLabel}.`);
     } catch (err) {
       setSubmitError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan pos.");
     } finally {
@@ -223,6 +225,7 @@ export default function CreatePost({ editingPost = null, onFinishEdit }) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
+      <FeedbackUI />
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <h1 className="text-lg font-bold tracking-tight">{isEditing ? "Edit Post" : "Create Post"}</h1>

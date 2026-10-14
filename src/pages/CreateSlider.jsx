@@ -1,3 +1,4 @@
+import { useFeedback } from '../components/FeedbackUI';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Image,
@@ -42,6 +43,7 @@ export default function CreateSlider({
   onFinishEdit,
   onOpenList,
 }) {
+  const { notify, confirmAction, FeedbackUI } = useFeedback();
   const { role } = useAuth();
 
   const isAdmin = role === 'admin' || role === 'super_admin';
@@ -187,12 +189,12 @@ export default function CreateSlider({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('File harus berupa gambar.');
+      notify('File harus berupa gambar.', 'error');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Ukuran gambar maksimal 5MB.');
+      notify('Ukuran gambar maksimal 5MB.', 'error');
       return;
     }
 
@@ -316,13 +318,13 @@ export default function CreateSlider({
           payload
         );
 
-        alert('Slider berhasil diperbarui.');
+        notify('Slider berhasil diperbarui.');
 
         onFinishEdit?.();
       } else {
         await createBannerApi(payload);
 
-        alert('Slider berhasil dibuat.');
+        notify('Slider berhasil dibuat.');
 
         // Reset form
         setTitle('');
@@ -362,6 +364,7 @@ export default function CreateSlider({
 
   return (
     <div className="flex flex-col">
+      <FeedbackUI />
       {/* HEADER */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
