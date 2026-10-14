@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import {
   Search, Trash2, RefreshCw, Inbox, AlertCircle, X,
-  Phone, Calendar, Mail, MailOpen, MessageSquare, CheckCheck,
+  Phone, Calendar, MessageSquare, CheckCheck,
 } from 'lucide-react'
 import { listContactsApi, markContactReadApi, deleteContactApi } from '../api/contacts'
 
@@ -65,7 +65,8 @@ export default function KontakInboxPage() {
   const [page, setPage] = useState(1)
 
   const [selected, setSelected] = useState(null) // pesan yang dibuka di modal
-  const [busyId, setBusyId] = useState(null)     // id yang sedang diproses (read/delete)
+  const [deleteConfirm, setDeleteConfirm] = useState(null) // id yang mau dihapus → popup konfirmasi
+  const [busyId, setBusyId] = useState(null) // id yang lagi diproses (read)
 
   useEffect(() => {
     let isMounted = true
@@ -124,42 +125,44 @@ export default function KontakInboxPage() {
   const updateLocal = (id, patch) =>
     setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)))
 
-  const setRead = async (contact, read) => {
-    setBusyId(contact.id)
+  const setRead = async (id) => {
+    setBusyId(id)
     try {
-      await markContactReadApi(contact.id, read)
-      updateLocal(contact.id, { status: read ? 'read' : 'unread' })
-      setSelected((prev) =>
-        prev && prev.id === contact.id ? { ...prev, status: read ? 'read' : 'unread' } : prev
-      )
+      await markContactReadApi(id, true)
+      updateLocal(id, { status: 'read' })
+      setSelected((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev))
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal memperbarui status pesan')
+      alert(err.response?.data?.message || 'Gagal menandai pesan sudah dibaca')
     } finally {
       setBusyId(null)
     }
   }
 
-  // Buka detail: pesan belum dibaca otomatis ditandai sudah dibaca
+  // Buka detail: klik satu kali langsung buka modal + tandai read
   const openDetail = (contact) => {
+    const { id } = contact
+    if (isUnread(contact)) setRead(id)
     setSelected(contact)
-    if (isUnread(contact)) setRead(contact, true)
   }
 
-  const handleDelete = async (contact) => {
-    if (!window.confirm(`Hapus pesan dari "${contact.name}"? Tindakan ini tidak bisa dibatalkan.`)) return
-    setBusyId(contact.id)
+  const handleDelete = (contact) => {
+    // jangan panggil API langsung — buka popup konfirmasi dulu
+    setDeleteConfirm(contact)
+  }
+
+  const deleteNow = async () => {
+    setBusyId(deleteConfirm.id)
     try {
-      await deleteContactApi(contact.id)
-      setContacts((prev) => prev.filter((c) => c.id !== contact.id))
-      setSelected((prev) => (prev && prev.id === contact.id ? null : prev))
+      await deleteContactApi(deleteConfirm.id)
+      setContacts((prev) => prev.filter((c) => c.id !== deleteConfirm.id))
+      setSelected((prev) => (prev?.id === deleteConfirm.id ? null : prev))
     } catch (err) {
       alert(err.response?.data?.message || 'Gagal menghapus pesan')
     } finally {
       setBusyId(null)
+      setDeleteConfirm(null)
     }
   }
-
-  const iconBtn = 'p-1.5 rounded-lg transition-colors text-gray-400'
 
   return (
     <div className="flex flex-col h-full relative">
@@ -185,7 +188,7 @@ export default function KontakInboxPage() {
       <div className="grid grid-cols-3 gap-4 mb-5">
         {[
           { label: 'Total Pesan', value: counts.total, icon: MessageSquare, cls: 'text-sky-600 bg-sky-50' },
-          { label: 'Belum Dibaca', value: counts.unread, icon: Mail, cls: 'text-amber-600 bg-amber-50' },
+          { label: 'Belum Dibaca', value: counts.unread, icon: AlertCircle, cls: 'text-amber-600 bg-amber-50' },
           { label: 'Sudah Dibaca', value: counts.read, icon: CheckCheck, cls: 'text-emerald-600 bg-emerald-50' },
         ].map(({ label, value, icon: Icon, cls }) => (
           <div key={label} className="bg-white border border-gray-100 rounded-xl shadow-sm px-4 py-3.5 flex items-center gap-3">
@@ -263,7 +266,7 @@ export default function KontakInboxPage() {
                   key={c.id}
                   onClick={() => openDetail(c)}
                   className={`flex items-start gap-3.5 px-4 sm:px-5 py-4 cursor-pointer transition-colors ${
-                    isUnread(c) ? 'bg-sky-50/40 hover:bg-sky-50/70' : 'hover:bg-gray-50/60'
+                    isUnread(c) ? 'bg-sky-500/10 hover:bg-sky-500/20' : 'bg-gray-100 hover:bg-gray-200'
                   }`}
                 >
                   {/* Avatar */}
@@ -295,24 +298,6 @@ export default function KontakInboxPage() {
                     <span className="text-[11px] text-gray-400 whitespace-nowrap" title={formatDateTime(c.created_at)}>
                       {timeAgo(c.created_at)}
                     </span>
-                    <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => setRead(c, isUnread(c))}
-                        disabled={busyId === c.id}
-                        className={`${iconBtn} hover:text-sky-500 hover:bg-sky-50 disabled:opacity-40`}
-                        title={isUnread(c) ? 'Tandai sudah dibaca' : 'Tandai belum dibaca'}
-                      >
-                        {isUnread(c) ? <MailOpen size={15} /> : <Mail size={15} />}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(c)}
-                        disabled={busyId === c.id}
-                        className={`${iconBtn} hover:text-red-500 hover:bg-red-50 disabled:opacity-40`}
-                        title="Hapus pesan"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
                   </div>
                 </li>
               ))}
@@ -403,15 +388,14 @@ export default function KontakInboxPage() {
               </div>
             </div>
 
-            {/* Footer modal */}
-            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
+            {/* Footer modal detail */}
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3">
               <button
-                onClick={() => setRead(selected, isUnread(selected))}
+                onClick={() => setSelected(null)}
                 disabled={busyId === selected.id}
-                className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-sky-600 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-40"
               >
-                {isUnread(selected) ? <MailOpen size={14} /> : <Mail size={14} />}
-                {isUnread(selected) ? 'Tandai Sudah Dibaca' : 'Tandai Belum Dibaca'}
+                Tutup
               </button>
               <button
                 onClick={() => handleDelete(selected)}
@@ -420,6 +404,60 @@ export default function KontakInboxPage() {
               >
                 <Trash2 size={14} />
                 Hapus Pesan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup konfirmasi hapus */}
+      {deleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5 border-b border-gray-100">
+              <p className="text-sm font-bold text-gray-900">Hapus Pesan?</p>
+            </div>
+
+            <div className="px-6 py-4">
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Kamu akan menghapus pesan dari
+                <span className="font-semibold text-gray-900"> "{deleteConfirm.name}"</span>
+                dengan subjek "{deleteConfirm.subject}".
+                <br />
+                <span className="text-red-600 font-semibold">Tindakan ini tidak bisa dibatalkan.</span>
+              </p>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2.5">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={busyId !== null}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-40"
+              >
+                Batal
+              </button>
+              <button
+                onClick={deleteNow}
+                disabled={busyId === deleteConfirm.id}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {busyId === deleteConfirm.id ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-white/60 border-t-white animate-spin" />
+                    Menghapus...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={13} />
+                    Hapus
+                  </>
+                )}
               </button>
             </div>
           </div>
