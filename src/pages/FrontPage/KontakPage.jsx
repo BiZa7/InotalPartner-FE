@@ -5,6 +5,7 @@ import {
   ChevronRight, Home, MapPin, Phone, Mail,
   Send, CheckCircle2, AlertCircle, Loader2, MessageSquare,
 } from 'lucide-react'
+import PublicFooter from '../../components/PublicFooter'
 
 // Data kontak — samakan dengan footer halaman lain.
 // Ganti dengan data resmi INOTAL kalau sudah ada.
@@ -390,28 +391,7 @@ export default function KontakPage({ onNavigate }) {
       </section>
 
       {/* Footer strip */}
-      <footer className="bg-[#0c4a6e]">
-        <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
-              <span className="text-white font-extrabold text-xs tracking-tight">IN</span>
-            </div>
-            <span className="font-extrabold text-lg tracking-tight text-white">
-              INOTAL <span className="text-sky-400">PARTNER</span>
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13.5px] text-white/70">
-            <span className="flex items-center gap-2"><Phone size={14} className="text-sky-400" /> (022) 1234 5678</span>
-            <span className="flex items-center gap-2"><Mail size={14} className="text-sky-400" /> halo@inotalpartner.id</span>
-            <span className="flex items-center gap-2"><MapPin size={14} className="text-sky-400" /> Bandung, Indonesia</span>
-          </div>
-        </div>
-        <div className="border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 py-5 text-center text-[12px] text-white/40">
-            © 2026 INOTAL Partner. Semua hak dilindungi.
-          </div>
-        </div>
-      </footer>
+      <PublicFooter onNavigate={onNavigate} />
 
     </div>
   )

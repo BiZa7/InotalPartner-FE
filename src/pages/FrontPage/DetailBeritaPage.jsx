@@ -13,6 +13,7 @@ import {
   Clock,
   Eye,
 } from 'lucide-react'
+import PublicFooter from '../../components/PublicFooter'
 
 
 function formatDate(iso) {
@@ -773,125 +774,7 @@ export default function DetailBeritaPage({
 
       {/* FOOTER */}
 
-      <footer className="bg-[#0c4a6e] text-white/70">
-
-        <div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-10">
-
-          <div>
-
-            <div className="flex items-center gap-2 mb-4">
-
-              <div className="w-8 h-8 rounded-lg bg-[#0284c7] flex items-center justify-center">
-
-                <span className="text-white font-extrabold text-xs">
-                  IN
-                </span>
-
-              </div>
-
-              <span className="font-extrabold text-lg text-white">
-                INOTAL{' '}
-                <span className="text-sky-400">
-                  PARTNER
-                </span>
-              </span>
-
-            </div>
-
-            <p className="text-[13px] leading-relaxed">
-              Ekosistem kemitraan teknologi —
-              menghubungkan perusahaan,
-              komunitas, dan talenta digital.
-            </p>
-
-          </div>
-
-
-          <div>
-
-            <h4 className="text-white font-bold text-[13px] tracking-[0.12em] uppercase mb-4">
-              Kontak
-            </h4>
-
-            <ul className="space-y-2.5 text-[13.5px]">
-              <li>(022) 1234 5678</li>
-              <li>halo@inotalpartner.id</li>
-              <li>Bandung, Indonesia</li>
-            </ul>
-
-          </div>
-
-
-          <div>
-
-            <h4 className="text-white font-bold text-[13px] tracking-[0.12em] uppercase mb-4">
-              Navigasi
-            </h4>
-
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13.5px]">
-
-              <button
-                onClick={() =>
-                  onNavigate?.('landing')
-                }
-                className="hover:text-sky-400 transition"
-              >
-                Beranda
-              </button>
-
-              <button
-                onClick={() =>
-                  onNavigate?.('program')
-                }
-                className="hover:text-sky-400 transition"
-              >
-                Program
-              </button>
-
-              <button
-                onClick={() =>
-                  onNavigate?.('event')
-                }
-                className="hover:text-sky-400 transition"
-              >
-                Event
-              </button>
-
-              <button
-                onClick={() =>
-                  onNavigate?.('tentang')
-                }
-                className="hover:text-sky-400 transition"
-              >
-                Tentang
-              </button>
-
-              <button
-                onClick={() =>
-                  onNavigate?.('partnership')
-                }
-                className="hover:text-sky-400 transition"
-              >
-                Partnership
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div className="border-t border-white/10">
-
-          <div className="max-w-7xl mx-auto px-6 py-5 text-center text-[12px] text-white/40">
-            © 2026 INOTAL Partner.
-            Semua hak dilindungi.
-          </div>
-
-        </div>
-
-      </footer>
+      <PublicFooter onNavigate={onNavigate} />
 
     </div>
   )
